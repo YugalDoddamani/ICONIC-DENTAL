@@ -1,0 +1,1555 @@
+/* ==========================================================================
+   ICONIC Dental & Aesthetics — CALIBRATED BLACK
+   Taste layer. Loaded after styles.css. Supersedes its tokens and the rules
+   it rewrites below.
+
+   The idea: this clinic's actual differentiator is magnification — a surgical
+   microscope, a diagnosis you can see before treatment starts. So the page is
+   built like the instrument: near-black fields, brass hairlines, measured type,
+   and one signature move (the loupe) that makes the claim visible.
+
+   Rules this file enforces:
+     1. Two grounds. SCOPE (near-black) frames the page and carries the three
+        "look at this" beats. PAPER (cool neutral, never warm ivory) carries
+        everything you read and fill in.
+     2. Every numeral is mono and tabular.
+     3. A boundary is a tone change OR a hairline. Never both.
+     4. No white text on a saturated fill. Saturated fills take near-black labels.
+     5. No blur, no glass, no shadow on black. Sharpeness is the brand.
+     6. Radii are 2px. Only the lens is round.
+
+   Fold-in plan: once reviewed, merge sections 1 and 2 into styles.css :root and
+   delete the duplicated legacy declarations. Tracked in DESIGN.md.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Token remap — legacy names, new values. This is the highest-leverage
+   block in the file: every existing `var(--gold-500)` etc. re-skins here.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Brand gold -> brass, drawn from the logo mark. Contrast measured:
+     brass-300 on scope-900 = 11.9 | brass-500 on scope-900 = 7.35
+     ink-950 on brass-500 = 7.35 | brass-600(*) on paper-000/100 = 6.0/5.5
+     (*gold-600 is re-pointed to the darker "brass ink" so existing small-text
+      usages on light grounds stop failing AA at 3.99:1) */
+  --gold-50: #f7f4ea;
+  --gold-100: #efe7cf;
+  --gold-200: #e2c97e;
+  --gold-400: #d3b25c;
+  --gold-500: #c09a3e;
+  --gold-600: #7c5f14;
+  --gold-700: #5f4810;
+
+  /* Grounds */
+  --bg-ivory: #f3f4f1;      /* was #f6f5f2 warm ivory -> cool clinical paper */
+  --bg-pure: #ffffff;
+  --bg-warm-card: #e7e8e4;  /* neutral chip, re-tintable per ground */
+
+  /* Ink */
+  --ink-950: #0d0d0c;
+  --ink-900: #161615;
+  --ink-800: #232320;
+  --ink-600: #55554e;       /* 6.9:1 on paper-100 */
+  --ink-500: #6c6c65;
+  --ink-300: #d5d6d1;
+
+  --border-subtle: rgba(13, 13, 12, 0.22);
+  --border-light: rgba(13, 13, 12, 0.12);
+
+  /* Functional. White on #1fa855 is 3.09:1 and fails; near-black on it is
+     6.27:1, so the fill stays WhatsApp green and the label goes dark. */
+  --whatsapp-green: #1fa855;
+  --whatsapp-dark: #24b95d;
+  --trust-emerald: #0d0d0c;
+
+  /* Elevation. Two levels, and on black there are none: black is edged, not lifted. */
+  --shadow-sm: none;
+  --shadow-md: none;
+
+  /* Radius. An instrument has corners. */
+  --radius-sm: 2px;
+  --radius-md: 2px;
+  --radius-lg: 3px;
+  --radius-pill: 9999px;
+
+  /* Type */
+  --font-display: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  --font-body: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-data: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+/* --------------------------------------------------------------------------
+   2. New tokens
+   -------------------------------------------------------------------------- */
+:root {
+  --scope-900: #0d0d0c;
+  --scope-850: #131312;
+  --scope-800: #1a1a18;
+  --scope-750: #232320;
+
+  --paper-000: #ffffff;
+  --paper-100: #f3f4f1;
+  --paper-200: #e7e8e4;
+  --paper-300: #d5d6d1;
+  --neutral-100: #e8e8e6;   /* the shade-matching grey behind the comparison */
+
+  --scope-text: #ffffff;
+  --scope-dim: #a9a9a1;     /* 8.1:1 on scope-900 */
+  --scope-faint: #77776f;   /* rules and non-text only */
+
+  --brass-200: #eadfbe;
+  --brass-300: #e2c97e;     /* 11.9:1 on scope */
+  --brass-400: #d3b25c;
+  --brass-500: #c09a3e;     /* the fill colour. 7.35:1 either way */
+  --brass-600: #a37f27;
+  --brass-700: #7c5f14;
+
+  --rule-paper: rgba(13, 13, 12, 0.13);
+  --rule-paper-soft: rgba(13, 13, 12, 0.07);
+  --rule-scope: rgba(255, 255, 255, 0.16);
+  --rule-scope-soft: rgba(255, 255, 255, 0.08);
+  --brass-line: rgba(211, 178, 92, 0.30);
+  --brass-line-strong: rgba(211, 178, 92, 0.60);
+
+  --ok-400: #5cc78e;        /* 8.9:1 on scope */
+  --ok-600: #0f7a45;
+
+  --focus: #a37f27;         /* flips to brass on dark grounds, see §8 */
+
+  --measure: 62ch;
+  --band: 72px;
+  --band-lg: 112px;
+}
+
+/* --------------------------------------------------------------------------
+   3. Base and type primitives
+   -------------------------------------------------------------------------- */
+body {
+  background-color: var(--paper-100);
+  color: var(--ink-800);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  max-width: 1240px;
+  padding: 0 20px;
+}
+
+@media (min-width: 768px) {
+  .container { padding: 0 40px; }
+}
+
+/* Anything that is a number, a label, a spec or a code is mono and tabular. */
+.mono,
+.eyebrow,
+.hero-credit,
+.plate-anno,
+.readout dt,
+.readout dd,
+.ledger-num,
+.index-num,
+.stat-number,
+.cleaning-time-tag,
+.reg-pill,
+.contact-key {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+/* .eyebrow — the instrument label above every heading.
+   <p class="eyebrow"><span class="mark"></span>01 — Preventive care</p> */
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--brass-700);
+  margin-bottom: 18px;
+}
+
+.ground-scope .eyebrow,
+.section-dark .eyebrow,
+.cleaning-spotlight-card .eyebrow,
+.mobile-drawer .eyebrow {
+  color: var(--brass-300);
+}
+
+/* The register mark: a 7px crosshair, the punctuation of the whole page. */
+.mark {
+  position: relative;
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+.mark::before,
+.mark::after {
+  content: '';
+  position: absolute;
+  background: currentColor;
+  opacity: 0.85;
+}
+
+.mark::before { left: 3px; top: 0; width: 1px; height: 7px; }
+.mark::after  { top: 3px; left: 0; height: 1px; width: 7px; }
+
+/* Statement type — Instrument Serif, display sizes only, never for UI. */
+.statement {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.3rem, 5.1vw, 3.9rem);
+  line-height: 1.0;
+  letter-spacing: -0.018em;
+  color: var(--ink-950);
+  max-width: 24ch;
+  text-wrap: balance;
+}
+
+.statement em {
+  font-style: italic;
+  color: var(--brass-700);
+}
+
+.ground-scope .statement { color: var(--scope-text); }
+.ground-scope .statement em { color: var(--brass-300); }
+
+.lede {
+  font-size: 1.0625rem;
+  line-height: 1.62;
+  max-width: var(--measure);
+  color: var(--ink-600);
+}
+
+.ground-scope .lede,
+.ground-scope .section-desc { color: var(--scope-dim); }
+
+/* Small helper the old sheet never had. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Body paragraphs inside ground-scope sections share one rhythm. */
+.section-body {
+  font-size: 1.0625rem;
+  line-height: 1.62;
+  color: var(--ink-600);
+  max-width: var(--measure);
+  margin-bottom: 16px;
+}
+
+.section-body:last-of-type { margin-bottom: 28px; }
+
+.ground-scope .section-body { color: var(--scope-dim); }
+
+.cred-sub {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--scope-dim);
+}
+
+.cleaning-lede {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--scope-dim);
+  max-width: 60ch;
+}
+
+.cleaning-badge-row .eyebrow { margin-bottom: 0; }
+
+.hours-title {
+  display: block;
+  font-family: var(--font-data);
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-600);
+  margin-bottom: 12px;
+}
+
+/* --------------------------------------------------------------------------
+   4. Section heads — eyebrow, heading, hairline that runs to the container edge
+   -------------------------------------------------------------------------- */
+.section-header {
+  max-width: 740px;
+  margin: 0 0 44px;
+}
+
+.section-title {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: clamp(1.5rem, 3.1vw, 2.15rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  color: var(--ink-950);
+  margin-bottom: 12px;
+  text-wrap: balance;
+}
+
+.ground-scope .section-title,
+.section-dark .section-title,
+.cleaning-spotlight-card .section-title { color: var(--scope-text); }
+
+.section-desc {
+  font-size: 1.0625rem;
+  line-height: 1.62;
+  max-width: 58ch;
+  color: var(--ink-600);
+}
+
+.section-header::after {
+  content: '';
+  display: block;
+  height: 1px;
+  margin-top: 32px;
+  background: var(--rule-paper);
+}
+
+.ground-scope .section-header::after,
+.section-dark .section-header::after {
+  background: var(--rule-scope);
+}
+
+.section-header.is-plain::after { display: none; }
+
+/* --------------------------------------------------------------------------
+   5. Buttons — saturated fill takes the near-black label. Always.
+   -------------------------------------------------------------------------- */
+.btn {
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  letter-spacing: 0.005em;
+  min-height: 50px;
+  padding: 13px 24px;
+}
+
+.btn-gold {
+  background: var(--brass-500);
+  color: var(--ink-950);
+  border: 1px solid var(--brass-500);
+}
+
+.btn-gold:hover {
+  background: var(--brass-400);
+  border-color: var(--brass-400);
+  color: var(--ink-950);
+}
+
+.btn-whatsapp {
+  background: var(--whatsapp-green);
+  color: var(--ink-950);
+  border: 1px solid var(--whatsapp-green);
+}
+
+.btn-whatsapp:hover {
+  background: var(--whatsapp-dark);
+  border-color: var(--whatsapp-dark);
+  color: var(--ink-950);
+}
+
+.btn-dark {
+  background: var(--ink-950);
+  color: var(--scope-text);
+  border: 1px solid var(--ink-950);
+}
+
+.btn-dark:hover { background: var(--scope-750); }
+
+.btn-outline {
+  background: transparent;
+  color: var(--ink-950);
+  border: 1px solid var(--border-subtle);
+}
+
+.btn-outline:hover {
+  border-color: var(--ink-950);
+  background: transparent;
+}
+
+/* On black, the hairline button flips. The old sheet only did this ad hoc
+   inside the drawer and left "Ask a question" invisible on dark grounds. */
+.ground-scope .btn-outline,
+.section-dark .btn-outline,
+.cleaning-spotlight-card .btn-outline,
+.mobile-drawer .btn-outline,
+.site-footer .btn-outline {
+  color: var(--scope-text);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+.ground-scope .btn-outline:hover,
+.section-dark .btn-outline:hover,
+.mobile-drawer .btn-outline:hover,
+.site-footer .btn-outline:hover {
+  border-color: var(--brass-400);
+  color: var(--brass-200);
+}
+
+/* --------------------------------------------------------------------------
+   6. Chrome — the page is framed in black: strips, header, drawer, sticky, footer
+   -------------------------------------------------------------------------- */
+.mobile-location-strip,
+.top-utility-bar {
+  background: var(--scope-900);
+  border-bottom: 1px solid var(--rule-scope-soft);
+}
+
+.top-utility-bar { color: var(--scope-dim); font-size: 0.8rem; }
+
+.status-badge-open {
+  color: var(--scope-dim);
+  font-family: var(--font-data);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.status-badge-open::before {
+  background: var(--ok-400);
+  width: 5px;
+  height: 5px;
+  border-radius: 1px;   /* a square status pip, not a candy dot */
+}
+
+.social-pill {
+  font-family: var(--font-data);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  color: var(--scope-dim);
+  border: 1px solid var(--rule-scope);
+  width: 28px;
+  height: 28px;
+}
+
+.social-pill:hover { color: var(--scope-text); border-color: var(--brass-line-strong); }
+
+.site-header {
+  background: var(--scope-900);
+  border-bottom: 1px solid var(--rule-scope);
+  backdrop-filter: none;   /* rule 5. no blur anywhere */
+}
+
+.header-inner { min-height: 72px; }
+@media (min-width: 992px) { .header-inner { min-height: 84px; } }
+
+/* The logo is a black-and-brass mark on a white background. It sits on a white
+   chip — the same treatment the footer already used, now the system rule. */
+.brand-logo-img {
+  height: 30px;
+  width: auto;
+  background: var(--paper-000);
+  padding: 3px 6px;
+  border-radius: var(--radius-sm);
+}
+
+@media (min-width: 768px) { .brand-logo-img { height: 34px; } }
+
+.nav-link {
+  font-family: var(--font-data);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--scope-dim);
+  border-radius: var(--radius-sm);
+  padding: 10px 11px;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: var(--scope-text);
+  background: transparent;
+}
+
+.nav-link:hover { color: var(--brass-300); }
+
+.mobile-header-book-btn {
+  background: var(--brass-500);
+  color: var(--ink-950);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  min-height: 44px;
+}
+
+.mobile-menu-toggle {
+  color: var(--scope-text);
+  border-color: var(--rule-scope);
+  background: transparent;
+  width: 44px;
+  height: 44px;
+}
+
+/* Drawer */
+.mobile-drawer {
+  background: var(--scope-900);
+  box-shadow: none;
+  border-left: 1px solid var(--rule-scope);
+  padding: 20px 20px calc(20px + env(safe-area-inset-bottom));
+}
+
+.drawer-header { border-bottom: 1px solid var(--rule-scope); }
+.drawer-header img { background: var(--paper-000); padding: 2px 5px; border-radius: var(--radius-sm); }
+
+.drawer-close {
+  border-radius: var(--radius-sm);
+  border-color: var(--rule-scope);
+  color: var(--scope-text);
+  background: transparent;
+}
+
+.drawer-nav-list { gap: 0; margin: 20px 0; }
+
+.drawer-nav-btn {
+  color: var(--scope-dim);
+  font-family: var(--font-data);
+  font-size: 0.78rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  padding: 16px 10px;
+  border-bottom: 1px solid var(--rule-scope-soft);
+  border-radius: 0;
+}
+
+.drawer-nav-btn:hover,
+.drawer-nav-btn.active {
+  background: transparent;
+  color: var(--brass-300);
+}
+
+.drawer-nav-btn span:last-child { color: var(--brass-500); }
+
+.drawer-contact-box {
+  background: transparent;
+  border: 1px solid var(--rule-scope);
+  border-radius: var(--radius-sm);
+}
+
+.drawer-contact-box > div:first-child {
+  font-family: var(--font-data) !important;
+  letter-spacing: 0.12em !important;
+  color: var(--brass-300) !important;
+  font-size: 0.7rem !important;
+}
+
+/* Sticky action bar */
+.sticky-mobile-bar {
+  background: var(--scope-900);
+  border-top: 1px solid var(--rule-scope);
+  box-shadow: none;
+  padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+}
+
+.sticky-bar-btn {
+  font-family: var(--font-data);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  min-height: 46px;
+}
+
+.sticky-call {
+  color: var(--scope-text);
+  border: 1px solid var(--rule-scope);
+}
+
+.sticky-wa { background: var(--whatsapp-green); color: var(--ink-950); }
+.sticky-book { background: var(--brass-500); color: var(--ink-950); }
+
+/* Footer */
+.site-footer {
+  background: var(--scope-900);
+  color: var(--scope-dim);
+  padding: 80px 0 40px;
+  border-top: 0;
+}
+
+.footer-title {
+  font-family: var(--font-data);
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  color: var(--brass-300);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.footer-links { font-size: 0.9rem; gap: 12px; }
+.footer-links a { color: var(--scope-dim); }
+.footer-links a:hover { color: var(--scope-text); }
+.footer-bottom { border-top-color: var(--rule-scope-soft); color: var(--scope-faint); }
+
+.footer-bottom .mono { color: var(--scope-faint); }
+
+/* --------------------------------------------------------------------------
+   7. Grounds and the rhythm.
+   SCOPE beats sit at the top, the middle and the bottom. Everything else is
+   paper. A boundary is a tone change or a hairline — never both.
+   -------------------------------------------------------------------------- */
+.ground-scope   { background: var(--scope-900); color: var(--scope-text); }
+.ground-paper   { background: var(--paper-100); }
+.ground-white   { background: var(--paper-000); }
+.ground-neutral { background: var(--neutral-100); }
+
+.ground-scope,
+.ground-paper,
+.ground-white,
+.ground-neutral { border-top: 0; }
+
+.ground-paper + .ground-paper { border-top: 1px solid var(--rule-paper); }
+.ground-white + .ground-white { border-top: 1px solid var(--rule-paper); }
+
+.section { padding: var(--band) 0; }
+@media (min-width: 992px) { .section { padding: var(--band-lg) 0; } }
+
+/* Per-ground icon/rule colours inherited by children. */
+.ground-scope { --rule-paper: var(--rule-scope); }
+
+/* --------------------------------------------------------------------------
+   8. Hero — asymmetric, off-centre, on black. The copy column is the readout;
+   the plate is the specimen.
+   -------------------------------------------------------------------------- */
+.hero-section {
+  background: var(--scope-900);
+  color: var(--scope-text);
+  padding: 56px 0 0;
+  position: relative;
+}
+
+@media (min-width: 992px) {
+  .hero-section { padding: 88px 0 0; }
+}
+
+.hero-instrument {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+@media (min-width: 992px) {
+  .hero-instrument {
+    grid-template-columns: minmax(0, 6.6fr) minmax(0, 5.4fr);
+    gap: 72px;
+    align-items: center;
+  }
+}
+
+.hero-copy .eyebrow { margin-bottom: 26px; }
+
+.hero-copy .statement { margin-bottom: 22px; }
+
+.hero-copy .lede {
+  margin-bottom: 34px;
+  max-width: 44ch;
+}
+
+.hero-cta-group {
+  gap: 12px;
+  margin-bottom: 26px;
+}
+
+.hero-credit {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: var(--scope-faint);
+  text-transform: uppercase;
+  padding-top: 22px;
+  border-top: 1px solid var(--rule-scope-soft);
+  max-width: 44ch;
+}
+
+/* The specimen plate: a real framed object, corner ticks, one annotation. */
+.plate {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--brass-line);
+  background: var(--scope-800);
+  aspect-ratio: 3 / 4;
+}
+
+.plate img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 18%;
+  display: block;
+}
+
+.plate-tick {
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  border: 1px solid var(--brass-400);
+  pointer-events: none;
+}
+
+.plate-tick-tl { top: 8px; left: 8px; border-right: 0; border-bottom: 0; }
+.plate-tick-br { bottom: 8px; right: 8px; border-left: 0; border-top: 0; }
+
+.plate-anno {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  background: linear-gradient(to top, rgba(13, 13, 12, 0.92), rgba(13, 13, 12, 0.55) 62%, rgba(13, 13, 12, 0));
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--scope-dim);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.plate-anno b {
+  font-weight: 500;
+  color: var(--brass-300);
+  letter-spacing: 0.1em;
+}
+
+.hint-coarse { display: none; }
+
+@media (pointer: coarse) {
+  .hint-fine { display: none; }
+  .hint-coarse { display: inline; }
+}
+
+.plate-hint {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  z-index: 2;
+  font-family: var(--font-data);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--scope-dim);
+  background: rgba(13, 13, 12, 0.72);
+  border: 1px solid var(--rule-scope);
+  padding: 5px 8px;
+  pointer-events: none;
+}
+
+/* Readout strip — the instrument's values, in a single ruled row. */
+.readout {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0;
+  margin: 56px 0 0;
+  border-top: 1px solid var(--rule-scope);
+}
+
+@media (min-width: 768px) {
+  .readout { grid-template-columns: repeat(5, 1fr); margin-top: 80px; }
+}
+
+.readout-cell {
+  padding: 18px 0;
+  border-bottom: 1px solid var(--rule-scope-soft);
+}
+
+@media (min-width: 768px) {
+  .readout-cell {
+    padding: 22px 22px 30px 0;
+    border-bottom: 0;
+    border-right: 1px solid var(--rule-scope-soft);
+  }
+  .readout-cell:last-child { border-right: 0; }
+  .readout-cell:not(:first-child) { padding-left: 22px; }
+}
+
+.readout dt {
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--scope-faint);
+  margin-bottom: 8px;
+  line-height: 1.35;
+  overflow-wrap: break-word;
+}
+
+.readout dd {
+  font-size: 1.35rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--scope-text);
+  margin: 0;
+}
+
+.readout-cell:last-child dd { color: var(--brass-300); }
+
+/* --------------------------------------------------------------------------
+   9. Loupe — the signature. A 2.5x lens that follows the pointer over a plate.
+   Progressive enhancement: nothing essential lives inside the lens, it is
+   aria-hidden, and it never appears for reduced-motion or keyboard-only users.
+   -------------------------------------------------------------------------- */
+.loupe { cursor: crosshair; }
+
+.loupe-lens {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 168px;
+  height: 168px;
+  border-radius: 50%;
+  border: 1px solid var(--brass-400);
+  box-shadow: 0 0 0 1px rgba(13, 13, 12, 0.55), inset 0 0 0 1px rgba(13, 13, 12, 0.35);
+  background-repeat: no-repeat;
+  background-color: var(--scope-800);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 3;
+  will-change: transform;
+  transition: opacity 0.14s ease, transform 0.09s linear;
+}
+
+.loupe-lens::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.loupe-read {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-data);
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--brass-200);
+  background: rgba(13, 13, 12, 0.8);
+  padding: 2px 6px;
+}
+
+.loupe.is-lensing .loupe-lens { opacity: 1; }
+
+.gallery-item .loupe-lens { width: 124px; height: 124px; }
+
+/* --------------------------------------------------------------------------
+   10. Cleaning spotlight — a black instrument panel laid on paper
+   -------------------------------------------------------------------------- */
+.cleaning-spotlight-card {
+  background: var(--scope-900);
+  border: 1px solid var(--rule-scope);
+  border-radius: var(--radius-sm);
+  padding: 28px 20px;
+}
+
+@media (min-width: 768px) { .cleaning-spotlight-card { padding: 52px; } }
+
+.cleaning-badge-row {
+  color: var(--scope-faint);
+  font-family: var(--font-data);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  margin-bottom: 20px;
+}
+
+.cleaning-popular-tag,
+.cleaning-time-tag { color: var(--scope-faint); font-size: 0.66rem; }
+
+.cleaning-popular-tag::after { color: var(--scope-faint); }
+
+.cleaning-title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.75rem, 3.6vw, 2.6rem);
+  line-height: 1.04;
+  letter-spacing: -0.015em;
+  color: var(--scope-text);
+  max-width: 22ch;
+  margin-bottom: 18px;
+}
+
+.cleaning-spotlight-card p { color: var(--scope-dim) !important; }
+
+/* The checklist becomes a numbered ledger: 01–04, not four checkmarks. */
+.cleaning-checklist { gap: 0; margin: 28px 0 32px; }
+
+.cleaning-check-item {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 12px;
+  border-left: 0;
+  border-top: 1px solid var(--rule-scope-soft);
+  padding: 14px 0 0;
+  counter-increment: cleancheck;
+}
+
+.cleaning-checklist { counter-reset: cleancheck; }
+
+.cleaning-check-item::before {
+  content: '0' counter(cleancheck);
+  font-family: var(--font-data);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  color: var(--brass-500);
+  padding-top: 2px;
+}
+
+.cleaning-check-item strong { font-size: 0.92rem; font-weight: 600; }
+.cleaning-check-item span { font-size: 0.84rem; color: var(--scope-dim); }
+
+.cleaning-selector-box {
+  background: var(--paper-000);
+  border-radius: var(--radius-sm);
+  padding: 26px 20px;
+  border: 1px solid var(--brass-line);
+}
+
+.cleaning-selector-box h3 {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+}
+
+.cleaning-tier-btn { padding: 15px 0; }
+
+.cleaning-tier-btn.active .tier-name { color: var(--brass-700); }
+.cleaning-tier-btn.active .tier-name::after { color: var(--brass-600); }
+
+.tier-name {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  letter-spacing: 0;
+}
+
+.tier-sub { font-size: 0.8rem; color: var(--ink-500); }
+
+#selectedCleaningSummary {
+  background: var(--paper-200) !important;
+  border-radius: var(--radius-sm) !important;
+  font-family: var(--font-data);
+  font-size: 0.74rem !important;
+  letter-spacing: 0.02em;
+  color: var(--ink-800) !important;
+}
+
+#selectedCleaningSummary span { font-family: var(--font-body); }
+
+/* --------------------------------------------------------------------------
+   11. Treatments index — numbered rows. (The bones were already right in
+   styles.css; this adds the numeral and sharpens the type.)
+   -------------------------------------------------------------------------- */
+.category-tabs {
+  gap: 4px;
+  border-bottom: 1px solid var(--rule-paper);
+  padding-bottom: 0;
+  margin-bottom: 40px;
+}
+
+.cat-tab {
+  font-family: var(--font-data);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-500);
+  padding: 12px 13px;
+  border-radius: 0;
+  border-bottom: 1px solid transparent;
+  margin-bottom: -1px;
+}
+
+.cat-tab.active,
+.cat-tab:hover {
+  background: transparent;
+  color: var(--ink-950);
+  border-bottom-color: var(--brass-500);
+}
+
+.services-grid { counter-reset: svc; }
+
+.service-card {
+  counter-increment: svc;
+  grid-template-columns: 34px 120px 1fr auto;
+  gap: 24px;
+  padding: 20px 0;
+  border-top-color: var(--rule-paper);
+}
+
+.service-card.featured-service {
+  grid-template-columns: 34px 160px 1fr auto;
+  gap: 28px;
+  padding: 26px 0;
+  background: var(--paper-100);
+}
+
+.service-card::before {
+  content: counter(svc, decimal-leading-zero);
+  font-family: var(--font-data);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  color: var(--brass-700);
+  align-self: center;
+}
+
+.service-img-wrap {
+  height: 84px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--rule-paper-soft);
+  background: var(--paper-200);
+}
+
+.service-card.featured-service .service-img-wrap { height: 116px; }
+
+.service-title {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 1.0625rem;
+  letter-spacing: -0.012em;
+  color: var(--ink-950);
+  margin-bottom: 5px;
+}
+
+.service-desc { font-size: 0.9375rem; line-height: 1.55; color: var(--ink-600); max-width: 62ch; }
+
+.service-book-btn {
+  font-family: var(--font-data);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--brass-700);
+  border: 1px solid var(--border-subtle);
+  padding: 11px 16px;
+  border-radius: var(--radius-sm);
+  gap: 10px;
+  min-height: 42px;
+}
+
+.service-book-btn:hover {
+  background: transparent;
+  border-color: var(--brass-600);
+  color: var(--brass-700);
+}
+
+@media (max-width: 640px) {
+  .service-card,
+  .service-card.featured-service {
+    display: grid;
+    grid-template-columns: 26px 76px 1fr;
+    gap: 14px;
+    align-items: start;
+  }
+  .service-card .service-card-footer,
+  .service-card.featured-service .service-card-footer {
+    grid-column: 2 / -1;
+  }
+  .service-img-wrap,
+  .service-card.featured-service .service-img-wrap { height: 76px; }
+  .service-card::before { padding-top: 4px; }
+}
+
+/* --------------------------------------------------------------------------
+   12. Doctor + trust — the middle black beat
+   -------------------------------------------------------------------------- */
+.doctor-grid { gap: 40px; }
+
+@media (min-width: 992px) {
+  .doctor-grid { grid-template-columns: 0.92fr 1.08fr; gap: 72px; }
+}
+
+.doctor-photo-frame {
+  border: 1px solid var(--brass-line);
+  border-radius: var(--radius-sm);
+  background: var(--scope-800);
+}
+
+.doctor-photo-frame img { height: 400px; object-position: center 14%; }
+
+.doctor-credential-banner {
+  background: var(--scope-850);
+  border-top: 1px solid var(--rule-scope);
+  padding: 16px 18px;
+}
+
+.doctor-credential-banner strong {
+  font-family: var(--font-body);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.reg-pill {
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--brass-300) !important;
+}
+
+.ground-scope p[style*='var(--ink-600)'] { color: var(--scope-dim) !important; }
+
+.cred-badges-grid {
+  border-top: 1px solid var(--rule-scope);
+  margin: 28px 0;
+}
+
+.cred-box {
+  border-bottom: 1px solid var(--rule-scope-soft);
+  padding: 16px 18px 16px 0;
+}
+
+.cred-box:nth-child(even) { padding-left: 18px; }
+
+.cred-box strong {
+  font-family: var(--font-data);
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  color: var(--scope-text);
+}
+
+.cred-box span { font-size: 0.8rem; color: var(--scope-dim); }
+
+/* Stats become a readout, not a hero-number wall. */
+.stats-banner {
+  border-bottom-color: var(--rule-scope);
+  margin-bottom: 56px;
+  padding-bottom: 44px;
+  gap: 0;
+}
+
+@media (min-width: 768px) { .stats-banner { gap: 0; } }
+
+.stat-card { border-right: 1px solid var(--rule-scope-soft); padding-right: 24px; }
+
+@media (min-width: 768px) {
+  .stat-card { padding-left: 24px; }
+  .stat-card:first-child { padding-left: 0; }
+  .stat-card:last-child { border-right: 0; }
+}
+
+@media (max-width: 767px) {
+  .stat-card { border-right: 0; padding-right: 0; padding-left: 0; }
+}
+
+.stat-number {
+  font-size: clamp(1.7rem, 3.2vw, 2.4rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--scope-text);
+}
+
+.stat-label {
+  font-family: var(--font-data);
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--scope-faint);
+  margin-top: 8px;
+}
+
+.why-grid { gap: 0 56px; }
+
+.why-card {
+  border-top: 1px solid var(--rule-scope-soft);
+  border-radius: 0;
+  padding: 22px 0 0;
+}
+
+.ground-scope .why-card { border-top-color: var(--rule-scope-soft); }
+
+.why-card h3 {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.98rem;
+  letter-spacing: -0.008em;
+  color: var(--scope-text);
+  margin-bottom: 8px;
+}
+
+.why-card p { font-size: 0.9rem; color: var(--scope-dim); }
+
+/* --------------------------------------------------------------------------
+   13. Before and after — on neutral grey on purpose. Colour judgement needs a
+   neutral surround; a warm or white field shifts how the enamel reads.
+   -------------------------------------------------------------------------- */
+.ba-wrapper { max-width: 900px; }
+
+.ba-stage {
+  border: 1px solid var(--rule-paper);
+  border-radius: var(--radius-sm);
+}
+
+.illustrative-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-data);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-600);
+  border: 1px solid var(--rule-paper);
+  background: var(--paper-000);
+  padding: 7px 10px;
+  margin-bottom: 20px;
+}
+
+.illustrative-flag::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  background: var(--brass-600);
+  border-radius: 1px;
+}
+
+.ba-label {
+  font-family: var(--font-data);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  background: var(--scope-900);
+  color: var(--scope-text);
+  padding: 5px 9px;
+  border-radius: var(--radius-sm);
+}
+
+.ba-divider-line { background: var(--brass-400); width: 1px; }
+
+.ba-handle {
+  background: var(--paper-000);
+  border: 1px solid var(--brass-500);
+  color: var(--ink-950);
+  border-radius: var(--radius-sm);
+  font-size: 0.7rem;
+}
+
+.ba-controls-bar { margin-top: 20px; gap: 12px; }
+.ba-controls-bar .btn { min-height: 44px !important; padding: 10px 18px !important; font-size: 0.8125rem !important; }
+.ba-controls-bar .btn-outline { background: var(--paper-000); }
+
+.cleaning-time-tag, .tier-name { text-transform: none; }
+
+/* --------------------------------------------------------------------------
+   14. Gallery — plates on paper, with the lens available on each
+   -------------------------------------------------------------------------- */
+.gallery-grid { gap: 2px; background: var(--paper-300); border: 1px solid var(--paper-300); }
+
+.gallery-item {
+  border-radius: 0;
+  height: 320px;
+  background: var(--paper-200);
+}
+
+@media (min-width: 992px) { .gallery-item { height: 340px; } }
+
+.gallery-caption {
+  background: linear-gradient(to top, rgba(13, 13, 12, 0.94), rgba(13, 13, 12, 0.6) 60%, rgba(13, 13, 12, 0));
+  padding: 16px 16px 14px;
+  z-index: 2;
+}
+
+.gallery-caption strong { font-size: 0.86rem; letter-spacing: -0.005em; }
+
+.gallery-caption span {
+  display: block;
+  margin-top: 3px;
+  font-family: var(--font-data);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--scope-dim);
+}
+
+/* --------------------------------------------------------------------------
+   15. Reviews and FAQ
+   -------------------------------------------------------------------------- */
+.reviews-grid { gap: 2px; background: var(--rule-paper); border: 1px solid var(--rule-paper); }
+
+.review-card {
+  background: var(--paper-000);
+  border-top: 0;
+  padding: 28px 26px;
+  gap: 22px;
+}
+
+.review-stars {
+  font-family: var(--font-data);
+  color: var(--brass-600);
+  font-size: 0.7rem;
+  letter-spacing: 0.34em;
+}
+
+.review-quote {
+  font-family: var(--font-body);
+  font-size: 0.98rem;
+  line-height: 1.6;
+  color: var(--ink-800);
+}
+
+.reviewer-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  font-family: var(--font-data);
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  color: var(--ink-600);
+}
+
+.reviewer-meta strong { font-size: 0.84rem !important; color: var(--ink-800) !important; }
+
+.faq-list { border-top-color: var(--rule-paper); margin-top: 8px; }
+.faq-item { border-bottom-color: var(--rule-paper); }
+
+.faq-question {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: -0.008em;
+  padding: 22px 0;
+}
+
+.faq-question span:last-child {
+  font-family: var(--font-data);
+  font-weight: 400;
+  color: var(--brass-700);
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+.faq-answer { color: var(--ink-600); font-size: 0.97rem; max-width: 74ch; }
+
+/* --------------------------------------------------------------------------
+   16. Booking — a paper record on a paper ground, hairlines everywhere
+   -------------------------------------------------------------------------- */
+.booking-form-card {
+  background: var(--paper-000);
+  border: 1px solid var(--rule-paper);
+  border-radius: var(--radius-sm);
+  padding: 30px 24px;
+}
+
+@media (min-width: 768px) { .booking-form-card { padding: 40px 36px; } }
+
+.booking-form-card h2,
+.location-info-card h3 {
+  font-family: var(--font-body) !important;
+  font-weight: 600 !important;
+  font-size: 1.5rem !important;
+  letter-spacing: -0.02em !important;
+  color: var(--ink-950) !important;
+  margin-bottom: 10px !important;
+}
+
+.location-info-card {
+  border-left: 1px solid var(--rule-paper);
+  padding-left: 44px;
+}
+
+.location-info-card p { color: var(--ink-600) !important; }
+
+.form-label {
+  font-family: var(--font-data);
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-600);
+  margin-bottom: 9px;
+}
+
+.form-input, .form-select {
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  min-height: 50px;
+  font-family: var(--font-body);
+  font-size: 1rem;
+}
+
+.form-input::placeholder { color: var(--ink-500); opacity: 1; }
+
+.form-input:focus, .form-select:focus {
+  border-color: var(--brass-600);
+  box-shadow: inset 0 0 0 1px var(--brass-600);
+  outline: none;
+}
+
+.phone-prefix {
+  background: var(--paper-200);
+  border-color: var(--border-subtle);
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+  font-family: var(--font-data);
+  font-size: 0.86rem;
+  letter-spacing: 0.04em;
+}
+
+.treatment-chip {
+  font-family: var(--font-body);
+  font-size: 0.84rem;
+  border-radius: var(--radius-sm);
+  min-height: 40px;
+  padding: 8px 13px;
+}
+
+.treatment-chip.selected {
+  background: var(--brass-500);
+  border-color: var(--brass-500);
+  color: var(--ink-950);
+  font-weight: 600;
+}
+
+.slot-pill {
+  border-radius: var(--radius-sm);
+  min-height: 62px;
+  font-size: 0.84rem;
+}
+
+.slot-pill.selected {
+  background: var(--paper-200);
+  border-color: var(--ink-950);
+  box-shadow: inset 0 -2px 0 var(--brass-500);
+}
+
+.contact-method-cards { border-top-color: var(--rule-paper); }
+.contact-action-row { border-bottom-color: var(--rule-paper); padding: 18px 0; }
+
+.contact-key {
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-500);
+  display: block;
+  margin-bottom: 3px;
+}
+
+.contact-action-row strong {
+  font-family: var(--font-body);
+  font-size: 0.98rem !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.005em;
+}
+
+.contact-action-row:hover strong { color: var(--brass-700) !important; }
+
+.contact-action-row span:last-child {
+  font-family: var(--font-data) !important;
+  font-size: 0.7rem !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase;
+  color: var(--brass-700) !important;
+}
+
+.map-embed-box {
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--rule-paper);
+  height: 230px;
+  filter: none;
+  margin-top: 22px;
+}
+
+.map-embed-box iframe { filter: grayscale(0.6) contrast(1.05); }
+
+#bookingSuccessBanner {
+  background: var(--paper-100) !important;
+  border: 1px solid var(--brass-line-strong) !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+#bookingSuccessBanner strong {
+  font-family: var(--font-data);
+  font-size: 0.74rem !important;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brass-700);
+}
+
+/* --------------------------------------------------------------------------
+   17. Focus, motion, small screens
+   -------------------------------------------------------------------------- */
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+.ground-scope,
+.section-dark,
+.cleaning-spotlight-card,
+.mobile-drawer,
+.site-footer,
+.sticky-mobile-bar,
+.hero-section {
+  --focus: #d3b25c;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  .loupe-lens { transition: opacity 0.12s ease; }
+  .loupe { cursor: default; }
+
+  .btn:active,
+  .sticky-bar-btn:active,
+  .mobile-header-book-btn:active { transform: none; }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+@media (max-width: 767px) {
+  :root { --band: 56px; }
+
+  .statement { font-size: clamp(2.1rem, 9.4vw, 3rem); }
+  .hero-section { padding-top: 40px; }
+  .hero-instrument { gap: 34px; }
+  .plate { aspect-ratio: 4 / 5; }
+  .readout { margin-top: 44px; }
+  .readout-cell { padding: 14px 0; }
+  .readout-cell:nth-child(odd) { padding-right: 14px; border-right: 1px solid var(--rule-scope-soft); }
+  .readout-cell:nth-child(even) { padding-left: 14px; }
+  .readout-cell:last-child { border-bottom: 0; }
+
+  .review-card { padding: 24px 20px; }
+  .location-info-card { padding-left: 0; border-left: 0; border-top: 1px solid var(--rule-paper); padding-top: 40px; }
+  .booking-form-card { padding: 26px 18px; }
+  .cleaning-check-item { grid-template-columns: 28px 1fr; }
+}
+
+/* --------------------------------------------------------------------------
+   18. Print — the one place a clinic page earns its keep
+   -------------------------------------------------------------------------- */
+@media print {
+  .sticky-mobile-bar,
+  .mobile-drawer,
+  .mobile-drawer-backdrop,
+  .hero-cta-group,
+  .loupe-lens { display: none !important; }
+
+  body { background: #fff; padding-bottom: 0; }
+  .ground-scope, .site-footer, .hero-section, .cleaning-spotlight-card { background: #fff !important; color: #000 !important; }
+  .statement, .section-title { color: #000 !important; }
+}

@@ -74,8 +74,12 @@ function selectCleaningTier(btnEl, packageName, packageSub) {
 
   document.querySelectorAll('#cleaningTierList .cleaning-tier-btn').forEach((b) => {
     b.classList.remove('active');
+    b.setAttribute('aria-pressed', 'false');
   });
-  if (btnEl) btnEl.classList.add('active');
+  if (btnEl) {
+    btnEl.classList.add('active');
+    btnEl.setAttribute('aria-pressed', 'true');
+  }
 
   const summaryEl = document.getElementById('selectedCleaningSummary');
   if (summaryEl) {
@@ -99,11 +103,17 @@ function bookSelectedCleaningPackage() {
 /* --------------------------------------------------------------------------
    Service category filter
    -------------------------------------------------------------------------- */
+/* These are filters over one shared list, not tabs with tabpanels, so they carry
+   aria-pressed rather than role="tab". */
 function filterServices(category, tabEl) {
   document.querySelectorAll('.category-tabs .cat-tab').forEach((t) => {
     t.classList.remove('active');
+    t.setAttribute('aria-pressed', 'false');
   });
-  if (tabEl) tabEl.classList.add('active');
+  if (tabEl) {
+    tabEl.classList.add('active');
+    tabEl.setAttribute('aria-pressed', 'true');
+  }
 
   document.querySelectorAll('#servicesGrid .service-card').forEach((card) => {
     const cardCats = card.getAttribute('data-category') || '';
@@ -144,13 +154,17 @@ function toggleFaq(btnEl) {
   document.querySelectorAll('.faq-list .faq-item').forEach((el) => {
     el.classList.remove('open');
     const indicator = el.querySelector('.faq-question span:last-child');
+    const question = el.querySelector('.faq-question');
     if (indicator) indicator.textContent = '+';
+    if (question) question.setAttribute('aria-expanded', 'false');
   });
 
   if (!isOpen) {
     item.classList.add('open');
     const indicator = item.querySelector('.faq-question span:last-child');
+    const question = item.querySelector('.faq-question');
     if (indicator) indicator.textContent = '−';
+    if (question) question.setAttribute('aria-expanded', 'true');
   }
 }
 
@@ -266,3 +280,129 @@ function handleBookingSubmit(event) {
 function sendFormToWhatsApp() {
   window.open(buildWhatsAppBookingUrl(), '_blank', 'noopener,noreferrer');
 }
+/* --------------------------------------------------------------------------
+   The loupe — signature interaction
+   --------------------------------------------------------------------------
+   A magnifying lens that follows the pointer over a `.loupe` plate and shows
+   the same photograph at Nx. The clinic sells magnification, so the interface
+   demonstrates it rather than describing it.
+
+   Progressive enhancement: the lens is aria-hidden and decorative; every plate
+   keeps a full alt text, so nothing is available only inside the lens. Fine
+   pointers follow the cursor, coarse pointers tap to pin, and reduced-motion
+   users get an instant, unanimated lens.
+   -------------------------------------------------------------------------- */
+(function initLoupes() {
+  const hosts = document.querySelectorAll('.loupe[data-loupe]');
+  if (!hosts.length) return;
+
+  const finePointer = window.matchMedia('(pointer: fine)').matches;
+
+  hosts.forEach((host) => {
+    const img = host.querySelector('img');
+    const lens = host.querySelector('.loupe-lens');
+    if (!img || !lens) return;
+
+    const readout = lens.querySelector('[data-read]');
+    const zoom = parseFloat(host.dataset.loupe) || 2;
+    if (readout) readout.textContent = zoom + '\u00d7';
+
+    let box = { w: 0, h: 0 };      // plate box, CSS px
+    let disp = { w: 0, h: 0 };     // image size after object-fit: cover
+    let off = { x: 0, y: 0 };      // cover crop offset
+    let radius = 0;
+    let pinned = false;
+
+    function measure() {
+      const rect = host.getBoundingClientRect();
+      const nw = img.naturalWidth;
+      const nh = img.naturalHeight;
+      if (!rect.width || !rect.height || !nw || !nh) return false;
+
+      box = { w: rect.width, h: rect.height };
+      const scale = Math.max(box.w / nw, box.h / nh);   // object-fit: cover
+      disp = { w: nw * scale, h: nh * scale };
+      off = { x: (box.w - disp.w) / 2, y: (box.h - disp.h) / 2 };
+      radius = lens.offsetWidth / 2;
+      return true;
+    }
+
+    function place(clientX, clientY) {
+      const rect = host.getBoundingClientRect();
+      const px = clientX - rect.left;
+      const py = clientY - rect.top;
+
+      const diameter = radius * 2;
+      // The glass cannot travel past the frame, so near an edge it sits at the
+      // edge while the pointer keeps going. Everything below is derived from the
+      // glass centre, so what you see under the lens is always what is there.
+      const x = Math.max(0, Math.min(box.w - diameter, px - radius));
+      const y = Math.max(0, Math.min(box.h - diameter, py - radius));
+      const cx = x + radius;
+      const cy = y + radius;
+
+      lens.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+
+      const scaledW = disp.w * zoom;
+      const scaledH = disp.h * zoom;
+      let bgX = -((cx - off.x) * zoom - radius);
+      let bgY = -((cy - off.y) * zoom - radius);
+
+      bgX = Math.max(-(scaledW - diameter), Math.min(0, bgX));
+      bgY = Math.max(-(scaledH - diameter), Math.min(0, bgY));
+
+      lens.style.backgroundSize = `${scaledW}px ${scaledH}px`;
+      lens.style.backgroundPosition = `${bgX}px ${bgY}px`;
+    }
+
+    function paint() {
+      lens.style.backgroundImage = `url("${img.currentSrc || img.src}")`;
+    }
+
+    function show(on) {
+      if (on && !measure()) return;
+      lens.classList.toggle('is-lensing', !!on);
+      host.classList.toggle('is-lensing', !!on);
+      if (!on && pinned) pinned = false;
+    }
+
+    if (img.complete) paint();
+    else img.addEventListener('load', paint, { once: true });
+
+    // Fine pointers: follow. Touch: tap to pin, tap again to release.
+    if (finePointer) {
+      host.addEventListener('pointerenter', (e) => {
+        paint();
+        show(true);
+        place(e.clientX, e.clientY);
+      });
+      host.addEventListener('pointermove', (e) => {
+        if (!lens.classList.contains('is-lensing')) return;
+        place(e.clientX, e.clientY);
+      });
+      host.addEventListener('pointerleave', () => show(false));
+    } else {
+      host.addEventListener('pointerdown', (e) => {
+        paint();
+        pinned = !pinned;
+        show(pinned);
+        if (pinned) place(e.clientX, e.clientY);
+      });
+      host.addEventListener('pointermove', (e) => {
+        if (!pinned) return;
+        e.preventDefault();
+        place(e.clientX, e.clientY);
+      }, { passive: false });
+    }
+
+    if ('ResizeObserver' in window) {
+      new ResizeObserver(() => { if (lens.classList.contains('is-lensing')) measure(); }).observe(host);
+    } else {
+      window.addEventListener('resize', () => { if (lens.classList.contains('is-lensing')) measure(); });
+    }
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && pinned) show(false);
+    });
+  });
+})();
