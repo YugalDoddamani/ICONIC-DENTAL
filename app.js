@@ -30,22 +30,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /* --------------------------------------------------------------------------
    Mobile drawer navigation
+   TASK 5 — adds aria-expanded sync, aria-hidden on the drawer, body scroll
+   lock, and a Tab focus trap.
    -------------------------------------------------------------------------- */
 function toggleMobileDrawer(open) {
   const drawer = document.getElementById('mobileDrawer');
   const backdrop = document.getElementById('mobileDrawerBackdrop');
+  const toggle = document.getElementById('mobileMenuToggle');
   if (!drawer || !backdrop) return;
 
   if (open) {
     drawerTrigger = document.activeElement;
     drawer.classList.add('open');
     backdrop.classList.add('open');
+    drawer.setAttribute('aria-hidden', 'false');
+    if (toggle) toggle.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
 
     const closeBtn = drawer.querySelector('.drawer-close');
     if (closeBtn) closeBtn.focus({ preventScroll: true });
   } else {
     drawer.classList.remove('open');
     backdrop.classList.remove('open');
+    drawer.setAttribute('aria-hidden', 'true');
+    if (toggle) toggle.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
 
     if (drawerTrigger && typeof drawerTrigger.focus === 'function') {
       drawerTrigger.focus({ preventScroll: true });
@@ -64,6 +73,29 @@ document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
   const drawer = document.getElementById('mobileDrawer');
   if (drawer && drawer.classList.contains('open')) toggleMobileDrawer(false);
+});
+
+/* TASK 5 — Focus trap: Tab cycles inside the open drawer. */
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Tab') return;
+  const drawer = document.getElementById('mobileDrawer');
+  if (!drawer || !drawer.classList.contains('open')) return;
+
+  const items = drawer.querySelectorAll(
+    'button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+  );
+  if (!items.length) return;
+
+  const first = items[0];
+  const last = items[items.length - 1];
+
+  if (e.shiftKey && document.activeElement === first) {
+    e.preventDefault();
+    last.focus();
+  } else if (!e.shiftKey && document.activeElement === last) {
+    e.preventDefault();
+    first.focus();
+  }
 });
 
 /* --------------------------------------------------------------------------
@@ -102,9 +134,8 @@ function bookSelectedCleaningPackage() {
 
 /* --------------------------------------------------------------------------
    Service category filter
+   TASK 15 — fade the grid out, swap visible cards, fade back in.
    -------------------------------------------------------------------------- */
-/* These are filters over one shared list, not tabs with tabpanels, so they carry
-   aria-pressed rather than role="tab". */
 function filterServices(category, tabEl) {
   document.querySelectorAll('.category-tabs .cat-tab').forEach((t) => {
     t.classList.remove('active');
@@ -115,11 +146,27 @@ function filterServices(category, tabEl) {
     tabEl.setAttribute('aria-pressed', 'true');
   }
 
-  document.querySelectorAll('#servicesGrid .service-card').forEach((card) => {
-    const cardCats = card.getAttribute('data-category') || '';
-    const matches = category === 'all' || cardCats.includes(category);
-    card.style.display = matches ? '' : 'none';
-  });
+  const grid = document.getElementById('servicesGrid');
+  if (!grid) return;
+
+  const swap = () => {
+    grid.querySelectorAll('.service-card').forEach((card) => {
+      const cardCats = card.getAttribute('data-category') || '';
+      const matches = category === 'all' || cardCats.includes(category);
+      card.style.display = matches ? '' : 'none';
+    });
+  };
+
+  if (prefersReducedMotion) {
+    swap();
+    return;
+  }
+
+  grid.style.opacity = '0';
+  setTimeout(() => {
+    swap();
+    grid.style.opacity = '1';
+  }, 150);
 }
 
 /* --------------------------------------------------------------------------
@@ -144,6 +191,8 @@ function setBeforeAfterValue(val) {
 
 /* --------------------------------------------------------------------------
    FAQ accordion
+   TASK 10 — no more textContent swapping. The CSS rotates the icon.
+   aria-expanded is now kept in sync on the button.
    -------------------------------------------------------------------------- */
 function toggleFaq(btnEl) {
   const item = btnEl.closest('.faq-item');
@@ -153,18 +202,13 @@ function toggleFaq(btnEl) {
 
   document.querySelectorAll('.faq-list .faq-item').forEach((el) => {
     el.classList.remove('open');
-    const indicator = el.querySelector('.faq-question span:last-child');
-    const question = el.querySelector('.faq-question');
-    if (indicator) indicator.textContent = '+';
-    if (question) question.setAttribute('aria-expanded', 'false');
+    const btn = el.querySelector('.faq-question');
+    if (btn) btn.setAttribute('aria-expanded', 'false');
   });
 
   if (!isOpen) {
     item.classList.add('open');
-    const indicator = item.querySelector('.faq-question span:last-child');
-    const question = item.querySelector('.faq-question');
-    if (indicator) indicator.textContent = '−';
-    if (question) question.setAttribute('aria-expanded', 'true');
+    btnEl.setAttribute('aria-expanded', 'true');
   }
 }
 
@@ -252,6 +296,10 @@ function buildWhatsAppBookingUrl() {
   return `https://wa.me/919597767768?text=${encodeURIComponent(message)}`;
 }
 
+/* --------------------------------------------------------------------------
+   TASK 2 — Validate before showing the success banner.
+   Name must be non-empty. Phone must be 10 digits starting 6-9.
+   -------------------------------------------------------------------------- */
 function handleBookingSubmit(event) {
   event.preventDefault();
 
@@ -260,6 +308,19 @@ function handleBookingSubmit(event) {
   const treatment = document.getElementById('selectedTreatmentInput')?.value || '';
   const date = document.getElementById('preferredDate')?.value || '';
   const slot = document.getElementById('selectedSlotInput')?.value || '';
+
+  const errorEl = document.getElementById('formError');
+  const phoneOk = /^[6-9]\d{9}$/.test(phone.replace(/\D/g, ''));
+
+  if (!name || !phoneOk) {
+    if (errorEl) {
+      errorEl.hidden = false;
+      errorEl.textContent = 'Enter your name and a valid 10-digit mobile number.';
+    }
+    return;
+  }
+
+  if (errorEl) errorEl.hidden = true;
 
   const banner = document.getElementById('bookingSuccessBanner');
   const summary = document.getElementById('bookingSuccessSummary');
@@ -280,129 +341,123 @@ function handleBookingSubmit(event) {
 function sendFormToWhatsApp() {
   window.open(buildWhatsAppBookingUrl(), '_blank', 'noopener,noreferrer');
 }
+
 /* --------------------------------------------------------------------------
-   The loupe — signature interaction
-   --------------------------------------------------------------------------
-   A magnifying lens that follows the pointer over a `.loupe` plate and shows
-   the same photograph at Nx. The clinic sells magnification, so the interface
-   demonstrates it rather than describing it.
-
-   Progressive enhancement: the lens is aria-hidden and decorative; every plate
-   keeps a full alt text, so nothing is available only inside the lens. Fine
-   pointers follow the cursor, coarse pointers tap to pin, and reduced-motion
-   users get an instant, unanimated lens.
+   TASK 6 — Scroll reveal.
+   Elements with .reveal start at opacity 0 and slide up when .in is added.
+   Runs once per element; the observer is discarded after firing.
    -------------------------------------------------------------------------- */
-(function initLoupes() {
-  const hosts = document.querySelectorAll('.loupe[data-loupe]');
-  if (!hosts.length) return;
-
-  const finePointer = window.matchMedia('(pointer: fine)').matches;
-
-  hosts.forEach((host) => {
-    const img = host.querySelector('img');
-    const lens = host.querySelector('.loupe-lens');
-    if (!img || !lens) return;
-
-    const readout = lens.querySelector('[data-read]');
-    const zoom = parseFloat(host.dataset.loupe) || 2;
-    if (readout) readout.textContent = zoom + '\u00d7';
-
-    let box = { w: 0, h: 0 };      // plate box, CSS px
-    let disp = { w: 0, h: 0 };     // image size after object-fit: cover
-    let off = { x: 0, y: 0 };      // cover crop offset
-    let radius = 0;
-    let pinned = false;
-
-    function measure() {
-      const rect = host.getBoundingClientRect();
-      const nw = img.naturalWidth;
-      const nh = img.naturalHeight;
-      if (!rect.width || !rect.height || !nw || !nh) return false;
-
-      box = { w: rect.width, h: rect.height };
-      const scale = Math.max(box.w / nw, box.h / nh);   // object-fit: cover
-      disp = { w: nw * scale, h: nh * scale };
-      off = { x: (box.w - disp.w) / 2, y: (box.h - disp.h) / 2 };
-      radius = lens.offsetWidth / 2;
-      return true;
-    }
-
-    function place(clientX, clientY) {
-      const rect = host.getBoundingClientRect();
-      const px = clientX - rect.left;
-      const py = clientY - rect.top;
-
-      const diameter = radius * 2;
-      // The glass cannot travel past the frame, so near an edge it sits at the
-      // edge while the pointer keeps going. Everything below is derived from the
-      // glass centre, so what you see under the lens is always what is there.
-      const x = Math.max(0, Math.min(box.w - diameter, px - radius));
-      const y = Math.max(0, Math.min(box.h - diameter, py - radius));
-      const cx = x + radius;
-      const cy = y + radius;
-
-      lens.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-
-      const scaledW = disp.w * zoom;
-      const scaledH = disp.h * zoom;
-      let bgX = -((cx - off.x) * zoom - radius);
-      let bgY = -((cy - off.y) * zoom - radius);
-
-      bgX = Math.max(-(scaledW - diameter), Math.min(0, bgX));
-      bgY = Math.max(-(scaledH - diameter), Math.min(0, bgY));
-
-      lens.style.backgroundSize = `${scaledW}px ${scaledH}px`;
-      lens.style.backgroundPosition = `${bgX}px ${bgY}px`;
-    }
-
-    function paint() {
-      lens.style.backgroundImage = `url("${img.currentSrc || img.src}")`;
-    }
-
-    function show(on) {
-      if (on && !measure()) return;
-      lens.classList.toggle('is-lensing', !!on);
-      host.classList.toggle('is-lensing', !!on);
-      if (!on && pinned) pinned = false;
-    }
-
-    if (img.complete) paint();
-    else img.addEventListener('load', paint, { once: true });
-
-    // Fine pointers: follow. Touch: tap to pin, tap again to release.
-    if (finePointer) {
-      host.addEventListener('pointerenter', (e) => {
-        paint();
-        show(true);
-        place(e.clientX, e.clientY);
-      });
-      host.addEventListener('pointermove', (e) => {
-        if (!lens.classList.contains('is-lensing')) return;
-        place(e.clientX, e.clientY);
-      });
-      host.addEventListener('pointerleave', () => show(false));
-    } else {
-      host.addEventListener('pointerdown', (e) => {
-        paint();
-        pinned = !pinned;
-        show(pinned);
-        if (pinned) place(e.clientX, e.clientY);
-      });
-      host.addEventListener('pointermove', (e) => {
-        if (!pinned) return;
-        e.preventDefault();
-        place(e.clientX, e.clientY);
-      }, { passive: false });
-    }
-
-    if ('ResizeObserver' in window) {
-      new ResizeObserver(() => { if (lens.classList.contains('is-lensing')) measure(); }).observe(host);
-    } else {
-      window.addEventListener('resize', () => { if (lens.classList.contains('is-lensing')) measure(); });
-    }
-
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden && pinned) show(false);
+const revealObserver = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('in');
+      revealObserver.unobserve(entry.target);
     });
+  },
+  { threshold: 0.12, rootMargin: '0px 0px -48px 0px' }
+);
+
+document.querySelectorAll('.reveal').forEach((el) => revealObserver.observe(el));
+
+/* --------------------------------------------------------------------------
+   TASK 12 — Count up the four stats in the dark section.
+   Reduced motion jumps to the final value.
+   -------------------------------------------------------------------------- */
+function countUp(el) {
+  const target = parseFloat(el.dataset.count);
+  const suffix = el.dataset.suffix || '';
+  const decimals = el.dataset.decimals ? 1 : 0;
+  const duration = 1400;
+  const start = performance.now();
+
+  function tick(now) {
+    const progress = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const value = target * eased;
+    el.textContent =
+      (decimals ? value.toFixed(decimals) : Math.round(value).toLocaleString('en-IN')) + suffix;
+    if (progress < 1) requestAnimationFrame(tick);
+  }
+
+  requestAnimationFrame(tick);
+}
+
+const statObserver = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      statObserver.unobserve(entry.target);
+
+      const el = entry.target;
+      if (prefersReducedMotion) {
+        const target = parseFloat(el.dataset.count);
+        const suffix = el.dataset.suffix || '';
+        const decimals = el.dataset.decimals ? 1 : 0;
+        el.textContent =
+          (decimals ? target.toFixed(decimals) : Math.round(target).toLocaleString('en-IN')) + suffix;
+        return;
+      }
+
+      countUp(el);
+    });
+  },
+  { threshold: 0.4 }
+);
+
+document.querySelectorAll('.stat-number[data-count]').forEach((el) => statObserver.observe(el));
+
+/* --------------------------------------------------------------------------
+   TASK 13 — Scrollspy.
+   Marks the nav link whose section is closest above the header.
+   -------------------------------------------------------------------------- */
+const spySections = document.querySelectorAll('section[id]');
+const spyLinks = document.querySelectorAll('.nav-link');
+
+function updateScrollSpy() {
+  let current = '';
+  spySections.forEach((section) => {
+    if (section.getBoundingClientRect().top <= 140) current = section.id;
   });
-})();
+  spyLinks.forEach((link) => {
+    link.classList.toggle('active', link.dataset.target === current);
+  });
+}
+
+window.addEventListener('scroll', updateScrollSpy, { passive: true });
+updateScrollSpy();
+
+/* --------------------------------------------------------------------------
+   TASK 14 — Header shrink.
+   Adds .scrolled once the page has scrolled past the top utility bar.
+   -------------------------------------------------------------------------- */
+const siteHeader = document.querySelector('.site-header');
+
+function updateHeaderState() {
+  if (!siteHeader) return;
+  siteHeader.classList.toggle('scrolled', window.scrollY > 8);
+}
+
+window.addEventListener('scroll', updateHeaderState, { passive: true });
+updateHeaderState();
+
+/* --------------------------------------------------------------------------
+   TASK 18 — Map facade.
+   Defers loading the Google Maps iframe until the user asks for it.
+   -------------------------------------------------------------------------- */
+function loadMap() {
+  const facade = document.getElementById('mapFacade');
+  if (!facade) return;
+
+  const mapUrl =
+    'https://maps.google.com/maps?q=No.66%2F113%2C%20AA%20Block%2C%201st%20Floor%2C%204th%20Avenue%20Shanthi%20Colony%2C%20AnnaNagar%2C%20Chennai%20-%20600%20040.&t=m&z=15&output=embed&iwloc=near';
+
+  const iframe = document.createElement('iframe');
+  iframe.src = mapUrl;
+  iframe.loading = 'lazy';
+  iframe.referrerPolicy = 'no-referrer-when-downgrade';
+  iframe.title = 'ICONIC Dental & Aesthetics location';
+
+  facade.innerHTML = '';
+  facade.appendChild(iframe);
+}

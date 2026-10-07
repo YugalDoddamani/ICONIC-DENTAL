@@ -96,12 +96,12 @@
         </a>
 
         <nav class="desktop-nav" aria-label="Primary navigation">
-          <a href="#cleaning-spotlight" class="nav-link">Cleaning</a>
-          <a href="#services-section" class="nav-link">Treatments</a>
-          <a href="#doctor-section" class="nav-link">Dr. Raguraam</a>
-          <a href="#transformations-section" class="nav-link">Results</a>
-          <a href="#gallery-section" class="nav-link">Clinic</a>
-          <a href="#booking-section" class="nav-link">Visit</a>
+          <a href="#cleaning-spotlight" class="nav-link" data-target="cleaning-spotlight">Cleaning</a>
+          <a href="#services-section" class="nav-link" data-target="services-section">Treatments</a>
+          <a href="#doctor-section" class="nav-link" data-target="doctor-section">Dr. Raguraam</a>
+          <a href="#transformations-section" class="nav-link" data-target="transformations-section">Results</a>
+          <a href="#gallery-section" class="nav-link" data-target="gallery-section">Clinic</a>
+          <a href="#booking-section" class="nav-link" data-target="booking-section">Visit</a>
         </nav>
 
         <div class="header-desktop-cta">
@@ -117,7 +117,15 @@
           <button type="button" class="mobile-header-book-btn" onclick="scrollToBooking('Ultrasonic Dental Cleaning & Oral Checkup')">
             Book
           </button>
-          <button type="button" class="mobile-menu-toggle" onclick="toggleMobileDrawer(true)" aria-label="Open menu">
+          <button
+            type="button"
+            id="mobileMenuToggle"
+            class="mobile-menu-toggle"
+            onclick="toggleMobileDrawer(true)"
+            aria-label="Open menu"
+            aria-expanded="false"
+            aria-controls="mobileDrawer"
+          >
             ☰
           </button>
         </div>
@@ -125,20 +133,20 @@
     </header>
 
     <div class="mobile-drawer-backdrop" id="mobileDrawerBackdrop" onclick="toggleMobileDrawer(false)"></div>
-    <aside class="mobile-drawer" id="mobileDrawer" aria-label="Mobile menu">
+    <aside class="mobile-drawer" id="mobileDrawer" aria-label="Mobile menu" aria-hidden="true">
       <div>
         <div class="drawer-header">
           <img src="assets/clinic/logo.jpeg" alt="ICONIC Dental & Aesthetics" style="height:36px; width:auto;" />
           <button type="button" class="drawer-close" onclick="toggleMobileDrawer(false)" aria-label="Close menu">✕</button>
         </div>
         <ul class="drawer-nav-list">
-          <li><button type="button" class="drawer-nav-btn" onclick="drawerJump('#cleaning-spotlight')"><span>Dental cleaning</span><span>→</span></button></li>
-          <li><button type="button" class="drawer-nav-btn" onclick="drawerJump('#services-section')"><span>Treatments</span><span>→</span></button></li>
-          <li><button type="button" class="drawer-nav-btn" onclick="drawerJump('#doctor-section')"><span>Dr. Raguraam A Ramesh</span><span>→</span></button></li>
-          <li><button type="button" class="drawer-nav-btn" onclick="drawerJump('#transformations-section')"><span>Before and after</span><span>→</span></button></li>
-          <li><button type="button" class="drawer-nav-btn" onclick="drawerJump('#gallery-section')"><span>Inside the clinic</span><span>→</span></button></li>
-          <li><button type="button" class="drawer-nav-btn" onclick="drawerJump('#reviews-section')"><span>Reviews and FAQs</span><span>→</span></button></li>
-          <li><button type="button" class="drawer-nav-btn" onclick="drawerJump('#booking-section')"><span>Location and booking</span><span>→</span></button></li>
+          <li><button type="button" class="drawer-nav-btn" style="--i:0" onclick="drawerJump('#cleaning-spotlight')"><span>Dental cleaning</span><span>→</span></button></li>
+          <li><button type="button" class="drawer-nav-btn" style="--i:1" onclick="drawerJump('#services-section')"><span>Treatments</span><span>→</span></button></li>
+          <li><button type="button" class="drawer-nav-btn" style="--i:2" onclick="drawerJump('#doctor-section')"><span>Dr. Raguraam A Ramesh</span><span>→</span></button></li>
+          <li><button type="button" class="drawer-nav-btn" style="--i:3" onclick="drawerJump('#transformations-section')"><span>Before and after</span><span>→</span></button></li>
+          <li><button type="button" class="drawer-nav-btn" style="--i:4" onclick="drawerJump('#gallery-section')"><span>Inside the clinic</span><span>→</span></button></li>
+          <li><button type="button" class="drawer-nav-btn" style="--i:5" onclick="drawerJump('#reviews-section')"><span>Reviews and FAQs</span><span>→</span></button></li>
+          <li><button type="button" class="drawer-nav-btn" style="--i:6" onclick="drawerJump('#booking-section')"><span>Location and booking</span><span>→</span></button></li>
         </ul>
       </div>
       <div class="drawer-contact-box">
@@ -233,7 +241,7 @@
 
     <section class="section ground-paper" id="cleaning-spotlight">
       <div class="container">
-        <div class="cleaning-spotlight-card">
+        <div class="cleaning-spotlight-card reveal">
           <div class="cleaning-spotlight-grid">
             <div>
               <div class="cleaning-badge-row">
@@ -340,7 +348,7 @@
 
     <section class="section ground-white" id="services-section">
       <div class="container">
-        <div class="section-header">
+        <div class="section-header reveal">
           <p class="eyebrow"><span class="mark" aria-hidden="true"></span>02 — Treatments</p>
           <h2 class="section-title">Ten treatments, one diagnosis first</h2>
           <p class="section-desc">
@@ -358,9 +366,9 @@
         </div>
 
         <div class="services-grid" id="servicesGrid">
-          <article class="service-card featured-service" data-category="preventive cosmetic">
+          <article class="service-card featured-service reveal" data-category="preventive cosmetic" style="--d:0s">
             <div class="service-img-wrap">
-              <img src="assets/clinic/smile-after.jpg" alt="Ultrasonic dental cleaning in Anna Nagar" loading="lazy" />
+              <img src="assets/clinic/smile-after.jpg" alt="Ultrasonic dental cleaning in Anna Nagar" width="800" height="600" loading="lazy" decoding="async" />
             </div>
             <div class="service-body">
               <h3 class="service-title">Ultrasonic Dental Cleaning</h3>
@@ -376,9 +384,9 @@
             </div>
           </article>
 
-          <article class="service-card" data-category="specialized">
+          <article class="service-card reveal" data-category="specialized" style="--d:.05s">
             <div class="service-img-wrap">
-              <img src="assets/clinic/clinic-story.jpeg" alt="Microscopic root canal treatment in Anna Nagar" loading="lazy" />
+              <img src="assets/clinic/clinic-story.jpeg" alt="Microscopic root canal treatment in Anna Nagar" width="800" height="600" loading="lazy" decoding="async" />
             </div>
             <div class="service-body">
               <h3 class="service-title">Microscopic Root Canal</h3>
@@ -394,9 +402,9 @@
             </div>
           </article>
 
-          <article class="service-card" data-category="cosmetic">
+          <article class="service-card reveal" data-category="cosmetic" style="--d:.1s">
             <div class="service-img-wrap">
-              <img src="assets/clinic/svc-braces.jpg" alt="Braces and clear aligners in Anna Nagar" loading="lazy" />
+              <img src="assets/clinic/svc-braces.jpg" alt="Braces and clear aligners in Anna Nagar" width="800" height="600" loading="lazy" decoding="async" />
             </div>
             <div class="service-body">
               <h3 class="service-title">Braces and Clear Aligners</h3>
@@ -412,9 +420,9 @@
             </div>
           </article>
 
-          <article class="service-card" data-category="cosmetic">
+          <article class="service-card reveal" data-category="cosmetic" style="--d:.15s">
             <div class="service-img-wrap">
-              <img src="assets/clinic/svc-makeover.jpg" alt="Smile makeovers and veneers in Anna Nagar" loading="lazy" />
+              <img src="assets/clinic/svc-makeover.jpg" alt="Smile makeovers and veneers in Anna Nagar" width="800" height="600" loading="lazy" decoding="async" />
             </div>
             <div class="service-body">
               <h3 class="service-title">Smile Makeovers and Veneers</h3>
@@ -430,9 +438,9 @@
             </div>
           </article>
 
-          <article class="service-card" data-category="specialized">
+          <article class="service-card reveal" data-category="specialized" style="--d:.2s">
             <div class="service-img-wrap">
-              <img src="assets/clinic/svc-implants.jpg" alt="Dental implants in Anna Nagar" loading="lazy" />
+              <img src="assets/clinic/svc-implants.jpg" alt="Dental implants in Anna Nagar" width="800" height="600" loading="lazy" decoding="async" />
             </div>
             <div class="service-body">
               <h3 class="service-title">Dental Implants</h3>
@@ -447,9 +455,9 @@
             </div>
           </article>
 
-          <article class="service-card" data-category="specialized family">
+          <article class="service-card reveal" data-category="specialized family" style="--d:.25s">
             <div class="service-img-wrap">
-              <img src="assets/clinic/svc-crown.jpg" alt="Crowns, bridges and dentures in Anna Nagar" loading="lazy" />
+              <img src="assets/clinic/svc-crown.jpg" alt="Crowns, bridges and dentures in Anna Nagar" width="800" height="600" loading="lazy" decoding="async" />
             </div>
             <div class="service-body">
               <h3 class="service-title">Crowns, Bridges and Dentures</h3>
@@ -465,9 +473,9 @@
             </div>
           </article>
 
-          <article class="service-card" data-category="preventive family">
+          <article class="service-card reveal" data-category="preventive family" style="--d:.3s">
             <div class="service-img-wrap">
-              <img src="assets/clinic/svc-restoration.jpg" alt="Tooth-colored fillings and restorations" loading="lazy" />
+              <img src="assets/clinic/svc-restoration.jpg" alt="Tooth-colored fillings and restorations" width="800" height="600" loading="lazy" decoding="async" />
             </div>
             <div class="service-body">
               <h3 class="service-title">Tooth Restoration</h3>
@@ -483,9 +491,9 @@
             </div>
           </article>
 
-          <article class="service-card" data-category="family preventive">
+          <article class="service-card reveal" data-category="family preventive" style="--d:.35s">
             <div class="service-img-wrap">
-              <img src="assets/clinic/svc-kids.jpg" alt="Kids dentistry in Anna Nagar" loading="lazy" />
+              <img src="assets/clinic/svc-kids.jpg" alt="Kids dentistry in Anna Nagar" width="800" height="600" loading="lazy" decoding="async" />
             </div>
             <div class="service-body">
               <h3 class="service-title">Kids Dentistry</h3>
@@ -500,9 +508,9 @@
             </div>
           </article>
 
-          <article class="service-card" data-category="specialized">
+          <article class="service-card reveal" data-category="specialized" style="--d:.4s">
             <div class="service-img-wrap">
-              <img src="assets/clinic/svc-extraction.jpg" alt="Tooth and wisdom tooth removal in Anna Nagar" loading="lazy" />
+              <img src="assets/clinic/svc-extraction.jpg" alt="Tooth and wisdom tooth removal in Anna Nagar" width="800" height="600" loading="lazy" decoding="async" />
             </div>
             <div class="service-body">
               <h3 class="service-title">Tooth and Wisdom Removal</h3>
@@ -517,9 +525,9 @@
             </div>
           </article>
 
-          <article class="service-card" data-category="cosmetic preventive">
+          <article class="service-card reveal" data-category="cosmetic preventive" style="--d:.45s">
             <div class="service-img-wrap">
-              <img src="assets/clinic/svc-wellness.jpg" alt="Facial aesthetics and oral wellness consultation" loading="lazy" />
+              <img src="assets/clinic/svc-wellness.jpg" alt="Facial aesthetics and oral wellness consultation" width="800" height="600" loading="lazy" decoding="async" />
             </div>
             <div class="service-body">
               <h3 class="service-title">Facial Aesthetics and Wellness</h3>
@@ -545,7 +553,10 @@
             <img
               src="assets/clinic/gallery-4.jpeg"
               alt="Dr. Raguraam A Ramesh, BDS, FCE, MFM, MS"
+              width="800"
+              height="1000"
               loading="lazy"
+              decoding="async"
             />
             <div class="doctor-credential-banner">
               <div>
@@ -604,7 +615,7 @@
 
     <section class="section section-dark ground-scope">
       <div class="container">
-        <div class="section-header">
+        <div class="section-header reveal">
           <p class="eyebrow"><span class="mark" aria-hidden="true"></span>04 — What to expect</p>
           <h2 class="section-title">What to expect when you visit</h2>
         </div>
@@ -613,10 +624,22 @@
              unsourced numbers. Either replace them with figures the clinic can stand
              behind, or cut them — three honest figures beat four approximate ones. -->
         <div class="stats-banner">
-          <div class="stat-card"><div class="stat-number">10+</div><div class="stat-label">Years in practice</div></div>
-          <div class="stat-card"><div class="stat-number">2,000+</div><div class="stat-label">Patients treated</div></div>
-          <div class="stat-card"><div class="stat-number">4,000+</div><div class="stat-label">Treatments completed</div></div>
-          <div class="stat-card"><div class="stat-number">4.9</div><div class="stat-label">Average rating</div></div>
+          <div class="stat-card">
+            <div class="stat-number" data-count="10" data-suffix="+">10+</div>
+            <div class="stat-label">Years in practice</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" data-count="2000" data-suffix="+">2,000+</div>
+            <div class="stat-label">Patients treated</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" data-count="4000" data-suffix="+">4,000+</div>
+            <div class="stat-label">Treatments completed</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" data-count="4.9" data-decimals="1">4.9</div>
+            <div class="stat-label">Average rating</div>
+          </div>
         </div>
 
         <div class="why-grid">
@@ -650,7 +673,7 @@
 
     <section class="section ground-neutral" id="transformations-section">
       <div class="container">
-        <div class="section-header">
+        <div class="section-header reveal">
           <p class="eyebrow"><span class="mark" aria-hidden="true"></span>05 — Results</p>
           <h2 class="section-title">Before and after</h2>
           <p class="section-desc">
@@ -665,9 +688,9 @@
 
         <div class="ba-wrapper">
           <div class="ba-stage" id="baStage">
-            <img src="assets/clinic/smile-after.jpg" alt="After dental cleaning at ICONIC Dental" class="ba-img" />
+            <img src="assets/clinic/smile-after.jpg" alt="After dental cleaning at ICONIC Dental" width="1200" height="900" loading="lazy" decoding="async" class="ba-img" />
             <div class="ba-before-layer" id="baBeforeLayer">
-              <img src="assets/clinic/smile-before.jpg" alt="Before dental cleaning at ICONIC Dental" class="ba-img" />
+              <img src="assets/clinic/smile-before.jpg" alt="Before dental cleaning at ICONIC Dental" width="1200" height="900" loading="lazy" decoding="async" class="ba-img" />
             </div>
 
             <span class="ba-label ba-label-before">Before</span>
@@ -706,7 +729,7 @@
 
     <section class="section ground-white" id="gallery-section">
       <div class="container">
-        <div class="section-header">
+        <div class="section-header reveal">
           <p class="eyebrow"><span class="mark" aria-hidden="true"></span>06 — Inside the clinic</p>
           <h2 class="section-title">Inside the clinic</h2>
           <p class="section-desc">
@@ -716,8 +739,8 @@
         </div>
 
         <div class="gallery-grid">
-          <div class="gallery-item loupe" data-loupe="2">
-            <img src="assets/clinic/gallery-1.jpeg" alt="Dental operatory with ceiling microscope" loading="lazy" />
+          <div class="gallery-item loupe reveal" data-loupe="2" style="--d:0s">
+            <img src="assets/clinic/gallery-1.jpeg" alt="Dental operatory with ceiling microscope" width="800" height="600" loading="lazy" decoding="async" />
             <div class="gallery-caption">
               <strong>Main operatory</strong>
               <span>Ceiling-mounted surgical microscope and dental chair</span>
@@ -725,8 +748,8 @@
             <span class="loupe-lens" aria-hidden="true"><span class="loupe-read" data-read></span></span>
           </div>
 
-          <div class="gallery-item loupe" data-loupe="2">
-            <img src="assets/clinic/gallery-8.jpeg" alt="Patient reception and lounge" loading="lazy" />
+          <div class="gallery-item loupe reveal" data-loupe="2" style="--d:.08s">
+            <img src="assets/clinic/gallery-8.jpeg" alt="Patient reception and lounge" width="800" height="600" loading="lazy" decoding="async" />
             <div class="gallery-caption">
               <strong>Reception</strong>
               <span>Air-conditioned waiting area on 4th Avenue</span>
@@ -734,8 +757,8 @@
             <span class="loupe-lens" aria-hidden="true"><span class="loupe-read" data-read></span></span>
           </div>
 
-          <div class="gallery-item loupe" data-loupe="2">
-            <img src="assets/clinic/gallery-7.png" alt="Dr. Raguraam performing a microscopic root canal" loading="lazy" />
+          <div class="gallery-item loupe reveal" data-loupe="2" style="--d:.16s">
+            <img src="assets/clinic/gallery-7.png" alt="Dr. Raguraam performing a microscopic root canal" width="800" height="600" loading="lazy" decoding="async" />
             <div class="gallery-caption">
               <strong>Microscopic dentistry</strong>
               <span>Live visual explanation on the chairside screen</span>
@@ -743,8 +766,8 @@
             <span class="loupe-lens" aria-hidden="true"><span class="loupe-read" data-read></span></span>
           </div>
 
-          <div class="gallery-item loupe" data-loupe="2">
-            <img src="assets/clinic/gallery-5.jpeg" alt="Chairside digital display" loading="lazy" />
+          <div class="gallery-item loupe reveal" data-loupe="2" style="--d:.24s">
+            <img src="assets/clinic/gallery-5.jpeg" alt="Chairside digital display" width="800" height="600" loading="lazy" decoding="async" />
             <div class="gallery-caption">
               <strong>Digital diagnostics</strong>
               <span>See your scans from the chair</span>
@@ -752,8 +775,8 @@
             <span class="loupe-lens" aria-hidden="true"><span class="loupe-read" data-read></span></span>
           </div>
 
-          <div class="gallery-item loupe" data-loupe="2">
-            <img src="assets/clinic/gallery-2.jpeg" alt="Dr. Raguraam at the surgical microscope" loading="lazy" />
+          <div class="gallery-item loupe reveal" data-loupe="2" style="--d:.32s">
+            <img src="assets/clinic/gallery-2.jpeg" alt="Dr. Raguraam at the surgical microscope" width="800" height="600" loading="lazy" decoding="async" />
             <div class="gallery-caption">
               <strong>Dr. Raguraam A Ramesh</strong>
               <span>BDS, FCE, MFM, MS</span>
@@ -761,8 +784,8 @@
             <span class="loupe-lens" aria-hidden="true"><span class="loupe-read" data-read></span></span>
           </div>
 
-          <div class="gallery-item loupe" data-loupe="2">
-            <img src="assets/clinic/clinic-story.jpeg" alt="Sterilized instrument setup" loading="lazy" />
+          <div class="gallery-item loupe reveal" data-loupe="2" style="--d:.4s">
+            <img src="assets/clinic/clinic-story.jpeg" alt="Sterilized instrument setup" width="800" height="600" loading="lazy" decoding="async" />
             <div class="gallery-caption">
               <strong>Sterilization</strong>
               <span>Autoclaved instruments and disposable barriers</span>
@@ -775,7 +798,7 @@
 
     <section class="section ground-paper" id="reviews-section">
       <div class="container">
-        <div class="section-header">
+        <div class="section-header reveal">
           <p class="eyebrow"><span class="mark" aria-hidden="true"></span>07 — Patients</p>
           <h2 class="section-title">Patient reviews</h2>
           <p class="section-desc">
@@ -785,7 +808,7 @@
         </div>
 
         <div class="reviews-grid">
-          <article class="review-card">
+          <article class="review-card reveal" style="--d:0s">
             <div>
               <div class="review-stars" aria-hidden="true">★★★★★</div>
               <span class="sr-only">Rated 5 out of 5</span>
@@ -800,7 +823,7 @@
             </div>
           </article>
 
-          <article class="review-card">
+          <article class="review-card reveal" style="--d:.08s">
             <div>
               <div class="review-stars" aria-hidden="true">★★★★★</div>
               <span class="sr-only">Rated 5 out of 5</span>
@@ -815,7 +838,7 @@
             </div>
           </article>
 
-          <article class="review-card">
+          <article class="review-card reveal" style="--d:.16s">
             <div>
               <div class="review-stars" aria-hidden="true">★★★★★</div>
               <span class="sr-only">Rated 5 out of 5</span>
@@ -840,7 +863,7 @@
             <div class="faq-item open">
               <button type="button" class="faq-question" aria-expanded="true" aria-controls="faq-answer-1" onclick="toggleFaq(this)">
                 <span>Is ultrasonic cleaning painful? Does it loosen teeth?</span>
-                <span aria-hidden="true">−</span>
+                <span class="faq-icon" aria-hidden="true">−</span>
               </button>
               <div class="faq-answer" id="faq-answer-1">
                 No. Ultrasonic scaling uses gentle vibration and a water mist to lift
@@ -853,7 +876,7 @@
             <div class="faq-item">
               <button type="button" class="faq-question" aria-expanded="false" aria-controls="faq-answer-2" onclick="toggleFaq(this)">
                 <span>How long does a cleaning appointment take?</span>
-                <span aria-hidden="true">+</span>
+                <span class="faq-icon" aria-hidden="true">+</span>
               </button>
               <div class="faq-answer" id="faq-answer-2">
                 Scaling, polishing and a microscopic checkup usually take 30 to 40
@@ -865,7 +888,7 @@
             <div class="faq-item">
               <button type="button" class="faq-question" aria-expanded="false" aria-controls="faq-answer-3" onclick="toggleFaq(this)">
                 <span>What is different about a microscopic root canal?</span>
-                <span aria-hidden="true">+</span>
+                <span class="faq-icon" aria-hidden="true">+</span>
               </button>
               <div class="faq-answer" id="faq-answer-3">
                 The surgical microscope magnifies the inside of the tooth up to 25 times
@@ -878,7 +901,7 @@
             <div class="faq-item">
               <button type="button" class="faq-question" aria-expanded="false" aria-controls="faq-answer-4" onclick="toggleFaq(this)">
                 <span>Where exactly are you located?</span>
-                <span aria-hidden="true">+</span>
+                <span class="faq-icon" aria-hidden="true">+</span>
               </button>
               <div class="faq-answer" id="faq-answer-4">
                 No. 66/113, AA Block, 1st Floor, 4th Avenue, Shanthi Colony, Anna Nagar,
@@ -911,6 +934,7 @@
                   id="patientName"
                   class="form-input"
                   placeholder="Karthik Subramanian"
+                  autocomplete="name"
                   required
                 />
               </div>
@@ -923,7 +947,9 @@
                     type="tel"
                     id="patientPhone"
                     class="form-input"
-                    inputmode="numeric"
+                    inputmode="tel"
+                    maxlength="10"
+                    autocomplete="tel"
                     pattern="[0-9\s\-]{10,13}"
                     placeholder="98400 12345"
                     required
@@ -980,6 +1006,8 @@
                   </div>
                 </div>
               </div>
+
+              <p id="formError" class="form-error" role="alert" hidden></p>
 
               <div style="display:flex; flex-direction:column; gap:10px; margin-top:24px;">
                 <button type="submit" class="btn btn-gold" style="width:100%;">
@@ -1047,13 +1075,12 @@
               </div>
             </div>
 
-            <div class="map-embed-box">
-              <iframe
-                title="ICONIC Dental & Aesthetics location"
-                src="https://maps.google.com/maps?q=No.66%2F113%2C%20AA%20Block%2C%201st%20Floor%2C%204th%20Avenue%20Shanthi%20Colony%2C%20AnnaNagar%2C%20Chennai%20-%20600%20040.&t=m&z=15&output=embed&iwloc=near"
-                loading="lazy"
-                referrerpolicy="no-referrer-when-downgrade"
-              ></iframe>
+            <div class="map-embed-box" id="mapFacade">
+              <div style="display:flex; align-items:center; justify-content:center; height:100%; background:var(--bg-warm-card, #ecebe6);">
+                <button type="button" class="btn btn-outline" onclick="loadMap()">
+                  Show the map
+                </button>
+              </div>
             </div>
 
             <a
@@ -1074,7 +1101,7 @@
       <div class="container">
         <div class="footer-grid">
           <div>
-            <img src="assets/clinic/logo.jpeg" alt="ICONIC Dental & Aesthetics" style="height:44px; width:auto; border-radius:6px; background:#fff; padding:4px 8px; margin-bottom:16px;" />
+            <img src="assets/clinic/logo.jpeg" alt="ICONIC Dental & Aesthetics" width="210" height="50" style="height:44px; width:auto; border-radius:6px; background:#fff; padding:4px 8px; margin-bottom:16px;" />
             <p style="font-size:0.88rem; color:#a3a3a3; margin-bottom:16px; line-height:1.6;">
               Microscopic dentistry, ultrasonic cleaning, aligners and facial aesthetics
               in Shanthi Colony, Anna Nagar.
