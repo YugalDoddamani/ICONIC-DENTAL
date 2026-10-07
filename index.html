@@ -6,11 +6,26 @@
   <title>ICONIC Dental &amp; Aesthetics | Dentist in Anna Nagar, Chennai</title>
   <meta name="description" content="Ultrasonic cleaning, microscopic root canals, aligners and implants at ICONIC Dental & Aesthetics, Shanthi Colony, Anna Nagar. Led by Dr. Raguraam A Ramesh (BDS, FCE, MFM, MS). Call or WhatsApp +91 95977 67768." />
 
+  <!-- Type: Instrument Serif (display statements only), IBM Plex Sans (UI and
+       body), IBM Plex Mono (every numeral, label and spec on the page). -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="system.css" />
+
+  <!-- TODO(ship-blocker): confirm the deploy path before publishing. og:image must
+       be an absolute URL and a 1200x630 crop, or WhatsApp shows a bare link — and
+       WhatsApp is this clinic's main booking channel. -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="ICONIC Dental &amp; Aesthetics | Shanthi Colony, Anna Nagar" />
+  <meta property="og:description" content="Microscope-guided dentistry in Anna Nagar. Cleaning, root canals, aligners and implants with the diagnosis shown on screen. Book on WhatsApp: +91 95977 67768." />
+  <meta property="og:image" content="https://iconicdentalandaesthetics.com/assets/clinic/gallery-1.jpeg" />
+  <meta property="og:image:width" content="1280" />
+  <meta property="og:image:height" content="853" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="theme-color" content="#0d0d0c" />
 
   <script type="application/ld+json">
   {
@@ -84,10 +99,9 @@
           <a href="#cleaning-spotlight" class="nav-link">Cleaning</a>
           <a href="#services-section" class="nav-link">Treatments</a>
           <a href="#doctor-section" class="nav-link">Dr. Raguraam</a>
-          <a href="#transformations-section" class="nav-link">Before and after</a>
+          <a href="#transformations-section" class="nav-link">Results</a>
           <a href="#gallery-section" class="nav-link">Clinic</a>
-          <a href="#reviews-section" class="nav-link">Reviews</a>
-          <a href="#location-section" class="nav-link">Location</a>
+          <a href="#booking-section" class="nav-link">Visit</a>
         </nav>
 
         <div class="header-desktop-cta">
@@ -135,22 +149,23 @@
       </div>
     </aside>
 
-    <section class="hero-section" id="top">
+    <section class="hero-section ground-scope" id="top">
       <div class="container">
-        <div class="hero-grid">
+        <div class="hero-instrument">
           <div class="hero-copy">
-            <div class="trust-pill-bar">
-              <span class="trust-stars">★★★★★</span>
-              <span>4.9 rating, Anna Nagar</span>
-            </div>
+            <p class="eyebrow">
+              <span class="mark" aria-hidden="true"></span>
+              Shanthi Colony · Anna Nagar · Chennai 600 040
+            </p>
 
-            <h1 class="hero-title">
-              Dental care in Anna Nagar, with the technology to back it up.
+            <h1 class="statement">
+              Most dentistry is done by feel.
+              <em>Here it is done by sight.</em>
             </h1>
 
-            <p class="hero-subtitle">
-              Ultrasonic cleaning, microscope-guided root canals, aligners and implants.
-              Led by Dr. Raguraam A Ramesh, BDS, FCE, MFM, MS.
+            <p class="lede">
+              Ultrasonic cleaning, microscope-guided root canals, aligners and
+              implants. You see the diagnosis on screen before anything begins.
             </p>
 
             <div class="hero-cta-group">
@@ -162,48 +177,67 @@
               </a>
             </div>
 
-            <div class="hero-micro-features">
-              <div class="micro-feature">
-                <span class="micro-check">✓</span>
-                <span>Microscope-guided treatment</span>
-              </div>
-              <div class="micro-feature">
-                <span class="micro-check">✓</span>
-                <span>10+ years of practice</span>
-              </div>
-              <div class="micro-feature">
-                <span class="micro-check">✓</span>
-                <span>Class-B autoclave sterilization</span>
-              </div>
-            </div>
+            <p class="hero-credit">
+              Dr. Raguraam A Ramesh · BDS, FCE, MFM, MS · TN Reg 36336
+            </p>
           </div>
 
-          <div class="hero-visual-card">
+          <figure class="plate loupe" data-loupe="2.5">
             <img
               src="assets/clinic/gallery-2.jpeg"
-              alt="Dr. Raguraam A Ramesh at the dental microscope in Anna Nagar"
-              class="hero-main-img"
+              alt="Dr. Raguraam A Ramesh working at the ceiling-mounted surgical microscope in the Anna Nagar clinic"
+              width="790"
+              height="1280"
               fetchpriority="high"
             />
-            <div class="hero-floating-badge">
-              <div class="floating-doc-info">
-                <h3>Dr. Raguraam A Ramesh</h3>
-                <p>BDS, FCE, MFM, MS, Clinical Director</p>
-              </div>
-              <span class="reg-pill">TN Reg #36336</span>
-            </div>
-          </div>
+            <span class="plate-tick plate-tick-tl" aria-hidden="true"></span>
+            <span class="plate-tick plate-tick-br" aria-hidden="true"></span>
+            <span class="plate-hint">
+              <span class="hint-fine">Hover to magnify</span><span class="hint-coarse">Tap to magnify</span>
+            </span>
+            <figcaption class="plate-anno">
+              <span>Surgical microscope</span>
+              <b>25× · LED</b>
+            </figcaption>
+            <span class="loupe-lens" aria-hidden="true"><span class="loupe-read" data-read></span></span>
+          </figure>
         </div>
+
+        <dl class="readout">
+          <div class="readout-cell">
+            <dt>Years in practice</dt>
+            <dd>10+</dd>
+          </div>
+          <div class="readout-cell">
+            <dt>Magnification</dt>
+            <dd>25×</dd>
+          </div>
+          <div class="readout-cell">
+            <dt>Sterilization</dt>
+            <dd>Class-B</dd>
+          </div>
+          <div class="readout-cell">
+            <dt>Mon to Sat</dt>
+            <dd>9:30–20:30</dd>
+          </div>
+          <div class="readout-cell">
+            <!-- TODO(ship-blocker): state the source and count ("4.9, 214 Google
+                 reviews") or drop it. An unsourced rating is the kind of claim the
+                 DCI ethics code treats as misleading advertising. -->
+            <dt>Patient rating</dt>
+            <dd>4.9</dd>
+          </div>
+        </dl>
       </div>
     </section>
 
-    <section class="section" id="cleaning-spotlight">
+    <section class="section ground-paper" id="cleaning-spotlight">
       <div class="container">
         <div class="cleaning-spotlight-card">
           <div class="cleaning-spotlight-grid">
             <div>
               <div class="cleaning-badge-row">
-                <span class="cleaning-popular-tag">Preventive care</span>
+                <span class="eyebrow"><span class="mark" aria-hidden="true"></span>01 — Preventive care</span>
                 <span class="cleaning-time-tag">30 to 40 minutes</span>
               </div>
 
@@ -211,7 +245,7 @@
                 Ultrasonic cleaning, polishing and oral checkup
               </h2>
 
-              <p style="color:#a3a3a3; font-size:1rem;">
+              <p class="cleaning-lede">
                 Brushing misses hardened tartar along the gumline and stains from coffee,
                 tea and food. Ultrasonic scaling lifts it away with gentle vibration
                 instead of scraping the enamel. One visit and your teeth feel noticeably
@@ -261,29 +295,29 @@
                 Pick the closest option and we will confirm at the appointment.
               </p>
 
-              <div class="cleaning-tier-tabs" id="cleaningTierList">
-                <button type="button" class="cleaning-tier-btn active" onclick="selectCleaningTier(this, 'Routine Ultrasonic Dental Cleaning & Polishing', 'Scaling, stain polish and a gum check')">
+              <div class="cleaning-tier-tabs" id="cleaningTierList" role="group" aria-label="Which cleaning do you need?">
+                <button type="button" class="cleaning-tier-btn active" aria-pressed="true" onclick="selectCleaningTier(this, 'Routine Ultrasonic Dental Cleaning & Polishing', 'Scaling, stain polish and a gum check')">
                   <div>
                     <span class="tier-name">Routine cleaning</span>
                     <span class="tier-sub">Scaling, polish, gum check</span>
                   </div>
                 </button>
 
-                <button type="button" class="cleaning-tier-btn" onclick="selectCleaningTier(this, 'Deep Stain Removal & Brightening', 'Scaling plus gloss polish')">
+                <button type="button" class="cleaning-tier-btn" aria-pressed="false" onclick="selectCleaningTier(this, 'Deep Stain Removal & Brightening', 'Scaling plus gloss polish')">
                   <div>
                     <span class="tier-name">Stain removal</span>
                     <span class="tier-sub">For coffee, tea and surface yellowing</span>
                   </div>
                 </button>
 
-                <button type="button" class="cleaning-tier-btn" onclick="selectCleaningTier(this, 'Gum Care & Sensitivity Relief Cleaning', 'Sub-gingival scaling for bleeding gums')">
+                <button type="button" class="cleaning-tier-btn" aria-pressed="false" onclick="selectCleaningTier(this, 'Gum Care & Sensitivity Relief Cleaning', 'Sub-gingival scaling for bleeding gums')">
                   <div>
                     <span class="tier-name">Gum care</span>
                     <span class="tier-sub">Bleeding gums, bad breath, tartar</span>
                   </div>
                 </button>
 
-                <button type="button" class="cleaning-tier-btn" onclick="selectCleaningTier(this, 'Family Preventive Cleaning Visit', 'Back-to-back slots for two or more')">
+                <button type="button" class="cleaning-tier-btn" aria-pressed="false" onclick="selectCleaningTier(this, 'Family Preventive Cleaning Visit', 'Back-to-back slots for two or more')">
                   <div>
                     <span class="tier-name">Family visit</span>
                     <span class="tier-sub">Back-to-back slots for two or more</span>
@@ -304,22 +338,23 @@
       </div>
     </section>
 
-    <section class="section section-pure" id="services-section">
+    <section class="section ground-white" id="services-section">
       <div class="container">
         <div class="section-header">
-          <h2 class="section-title">Treatments</h2>
+          <p class="eyebrow"><span class="mark" aria-hidden="true"></span>02 — Treatments</p>
+          <h2 class="section-title">Ten treatments, one diagnosis first</h2>
           <p class="section-desc">
             Every treatment is planned around your comfort. If you are not sure which one
             you need, book a consultation and we will look at it together.
           </p>
         </div>
 
-        <div class="category-tabs" role="tablist" aria-label="Treatment categories">
-          <button type="button" class="cat-tab active" onclick="filterServices('all', this)">All</button>
-          <button type="button" class="cat-tab" onclick="filterServices('preventive', this)">Cleaning and prevention</button>
-          <button type="button" class="cat-tab" onclick="filterServices('specialized', this)">Root canals and implants</button>
-          <button type="button" class="cat-tab" onclick="filterServices('cosmetic', this)">Braces and smile</button>
-          <button type="button" class="cat-tab" onclick="filterServices('family', this)">Kids and restorative</button>
+        <div class="category-tabs" role="group" aria-label="Filter treatments">
+          <button type="button" class="cat-tab active" aria-pressed="true" onclick="filterServices('all', this)">All</button>
+          <button type="button" class="cat-tab" aria-pressed="false" onclick="filterServices('preventive', this)">Cleaning and prevention</button>
+          <button type="button" class="cat-tab" aria-pressed="false" onclick="filterServices('specialized', this)">Root canals and implants</button>
+          <button type="button" class="cat-tab" aria-pressed="false" onclick="filterServices('cosmetic', this)">Braces and smile</button>
+          <button type="button" class="cat-tab" aria-pressed="false" onclick="filterServices('family', this)">Kids and restorative</button>
         </div>
 
         <div class="services-grid" id="servicesGrid">
@@ -503,7 +538,7 @@
       </div>
     </section>
 
-    <section class="section" id="doctor-section">
+    <section class="section ground-scope" id="doctor-section">
       <div class="container">
         <div class="doctor-grid">
           <div class="doctor-photo-frame">
@@ -514,22 +549,23 @@
             />
             <div class="doctor-credential-banner">
               <div>
-                <strong style="font-size:1.05rem; color:#ffffff; display:block;">Dr. Raguraam A Ramesh</strong>
-                <span style="font-size:0.84rem; color:#a3a3a3;">BDS, FCE, MFM, MS, Clinical Director</span>
+                <strong>Dr. Raguraam A Ramesh</strong>
+                <span class="cred-sub">BDS, FCE, MFM, MS, Clinical Director</span>
               </div>
-              <span class="reg-pill" style="color:#a3a3a3;">TN Reg #36336</span>
+              <span class="reg-pill">TN Reg № 36336</span>
             </div>
           </div>
 
           <div>
+            <p class="eyebrow"><span class="mark" aria-hidden="true"></span>03 — Who treats you</p>
             <h2 class="section-title">About Dr. Raguraam</h2>
-            <p style="margin-bottom:14px; color:var(--ink-600);">
+            <p class="section-body">
               Dr. Raguraam has practised in Anna Nagar for over ten years. His focus is
               microscopic endodontics and aesthetic work, which means most procedures
               are performed under magnification with the diagnosis shown to you on
               screen.
             </p>
-            <p style="margin-bottom:28px; color:var(--ink-600);">
+            <p class="section-body">
               The clinic runs on a small team and a strict sterilization protocol, so you
               are usually seen by the same people at every visit.
             </p>
@@ -566,12 +602,16 @@
       </div>
     </section>
 
-    <section class="section section-dark">
+    <section class="section section-dark ground-scope">
       <div class="container">
         <div class="section-header">
+          <p class="eyebrow"><span class="mark" aria-hidden="true"></span>04 — What to expect</p>
           <h2 class="section-title">What to expect when you visit</h2>
         </div>
 
+        <!-- TODO(ship-blocker): "2,000+ patients" and "4,000+ treatments" are round,
+             unsourced numbers. Either replace them with figures the clinic can stand
+             behind, or cut them — three honest figures beat four approximate ones. -->
         <div class="stats-banner">
           <div class="stat-card"><div class="stat-number">10+</div><div class="stat-label">Years in practice</div></div>
           <div class="stat-card"><div class="stat-number">2,000+</div><div class="stat-label">Patients treated</div></div>
@@ -608,15 +648,20 @@
       </div>
     </section>
 
-    <section class="section section-pure" id="transformations-section">
+    <section class="section ground-neutral" id="transformations-section">
       <div class="container">
         <div class="section-header">
+          <p class="eyebrow"><span class="mark" aria-hidden="true"></span>05 — Results</p>
           <h2 class="section-title">Before and after</h2>
           <p class="section-desc">
-            Drag the slider to see how cleaning, stain removal and whitening change the
-            surface of the enamel.
+            Drag the slider to compare. Enamel colour is judged on a neutral grey on
+            purpose — a warm or white surround shifts how teeth read.
           </p>
         </div>
+
+        <!-- Honesty rule: these two photographs are not this clinic's patients.
+             They carry a visible label until real consented cases replace them. -->
+        <p class="illustrative-flag">Illustrative comparison · not a clinic patient</p>
 
         <div class="ba-wrapper">
           <div class="ba-stage" id="baStage">
@@ -659,78 +704,91 @@
       </div>
     </section>
 
-    <section class="section section-pure" id="gallery-section">
+    <section class="section ground-white" id="gallery-section">
       <div class="container">
         <div class="section-header">
+          <p class="eyebrow"><span class="mark" aria-hidden="true"></span>06 — Inside the clinic</p>
           <h2 class="section-title">Inside the clinic</h2>
           <p class="section-desc">
-            Located on 4th Avenue, Shanthi Colony. Here is what the space looks like
-            before you arrive.
+            Located on 4th Avenue, Shanthi Colony. Here is the space you will actually
+            sit in — photographed, not illustrated.
           </p>
         </div>
 
         <div class="gallery-grid">
-          <div class="gallery-item">
+          <div class="gallery-item loupe" data-loupe="2">
             <img src="assets/clinic/gallery-1.jpeg" alt="Dental operatory with ceiling microscope" loading="lazy" />
             <div class="gallery-caption">
               <strong>Main operatory</strong>
               <span>Ceiling-mounted surgical microscope and dental chair</span>
             </div>
+            <span class="loupe-lens" aria-hidden="true"><span class="loupe-read" data-read></span></span>
           </div>
 
-          <div class="gallery-item">
+          <div class="gallery-item loupe" data-loupe="2">
             <img src="assets/clinic/gallery-8.jpeg" alt="Patient reception and lounge" loading="lazy" />
             <div class="gallery-caption">
               <strong>Reception</strong>
               <span>Air-conditioned waiting area on 4th Avenue</span>
             </div>
+            <span class="loupe-lens" aria-hidden="true"><span class="loupe-read" data-read></span></span>
           </div>
 
-          <div class="gallery-item">
+          <div class="gallery-item loupe" data-loupe="2">
             <img src="assets/clinic/gallery-7.png" alt="Dr. Raguraam performing a microscopic root canal" loading="lazy" />
             <div class="gallery-caption">
               <strong>Microscopic dentistry</strong>
               <span>Live visual explanation on the chairside screen</span>
             </div>
+            <span class="loupe-lens" aria-hidden="true"><span class="loupe-read" data-read></span></span>
           </div>
 
-          <div class="gallery-item">
+          <div class="gallery-item loupe" data-loupe="2">
             <img src="assets/clinic/gallery-5.jpeg" alt="Chairside digital display" loading="lazy" />
             <div class="gallery-caption">
               <strong>Digital diagnostics</strong>
               <span>See your scans from the chair</span>
             </div>
+            <span class="loupe-lens" aria-hidden="true"><span class="loupe-read" data-read></span></span>
           </div>
 
-          <div class="gallery-item">
+          <div class="gallery-item loupe" data-loupe="2">
             <img src="assets/clinic/gallery-2.jpeg" alt="Dr. Raguraam at the surgical microscope" loading="lazy" />
             <div class="gallery-caption">
               <strong>Dr. Raguraam A Ramesh</strong>
               <span>BDS, FCE, MFM, MS</span>
             </div>
+            <span class="loupe-lens" aria-hidden="true"><span class="loupe-read" data-read></span></span>
           </div>
 
-          <div class="gallery-item">
+          <div class="gallery-item loupe" data-loupe="2">
             <img src="assets/clinic/clinic-story.jpeg" alt="Sterilized instrument setup" loading="lazy" />
             <div class="gallery-caption">
               <strong>Sterilization</strong>
               <span>Autoclaved instruments and disposable barriers</span>
             </div>
+            <span class="loupe-lens" aria-hidden="true"><span class="loupe-read" data-read></span></span>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="section" id="reviews-section">
+    <section class="section ground-paper" id="reviews-section">
       <div class="container">
         <div class="section-header">
+          <p class="eyebrow"><span class="mark" aria-hidden="true"></span>07 — Patients</p>
           <h2 class="section-title">Patient reviews</h2>
+          <p class="section-desc">
+            Quoted as written. We do not edit reviews, and we do not ask patients to
+            leave them.
+          </p>
         </div>
 
         <div class="reviews-grid">
           <article class="review-card">
             <div>
-              <div class="review-stars">★★★★★</div>
+              <div class="review-stars" aria-hidden="true">★★★★★</div>
+              <span class="sr-only">Rated 5 out of 5</span>
               <p class="review-quote">
                 Went in for a root canal. Honestly did not feel a thing. Dr. Raguraam
                 showed me the whole thing on the screen as he went.
@@ -744,7 +802,8 @@
 
           <article class="review-card">
             <div>
-              <div class="review-stars">★★★★★</div>
+              <div class="review-stars" aria-hidden="true">★★★★★</div>
+              <span class="sr-only">Rated 5 out of 5</span>
               <p class="review-quote">
                 Been going here for two years now for cleaning every six months. Clinic
                 is spotless, staff are patient, and the appointment runs on time.
@@ -758,7 +817,8 @@
 
           <article class="review-card">
             <div>
-              <div class="review-stars">★★★★★</div>
+              <div class="review-stars" aria-hidden="true">★★★★★</div>
+              <span class="sr-only">Rated 5 out of 5</span>
               <p class="review-quote">
                 Took my seven year old for a filling. She was nervous and they handled
                 it really well. Would recommend for kids.
@@ -778,11 +838,11 @@
 
           <div class="faq-list">
             <div class="faq-item open">
-              <button type="button" class="faq-question" onclick="toggleFaq(this)">
+              <button type="button" class="faq-question" aria-expanded="true" aria-controls="faq-answer-1" onclick="toggleFaq(this)">
                 <span>Is ultrasonic cleaning painful? Does it loosen teeth?</span>
-                <span>−</span>
+                <span aria-hidden="true">−</span>
               </button>
-              <div class="faq-answer">
+              <div class="faq-answer" id="faq-answer-1">
                 No. Ultrasonic scaling uses gentle vibration and a water mist to lift
                 tartar away without scraping the enamel. It does not loosen teeth.
                 Removing tartar actually prevents gum recession and keeps teeth firmly
@@ -791,11 +851,11 @@
             </div>
 
             <div class="faq-item">
-              <button type="button" class="faq-question" onclick="toggleFaq(this)">
+              <button type="button" class="faq-question" aria-expanded="false" aria-controls="faq-answer-2" onclick="toggleFaq(this)">
                 <span>How long does a cleaning appointment take?</span>
-                <span>+</span>
+                <span aria-hidden="true">+</span>
               </button>
-              <div class="faq-answer">
+              <div class="faq-answer" id="faq-answer-2">
                 Scaling, polishing and a microscopic checkup usually take 30 to 40
                 minutes in a single visit. We recommend a professional cleaning every
                 six months.
@@ -803,11 +863,11 @@
             </div>
 
             <div class="faq-item">
-              <button type="button" class="faq-question" onclick="toggleFaq(this)">
+              <button type="button" class="faq-question" aria-expanded="false" aria-controls="faq-answer-3" onclick="toggleFaq(this)">
                 <span>What is different about a microscopic root canal?</span>
-                <span>+</span>
+                <span aria-hidden="true">+</span>
               </button>
-              <div class="faq-answer">
+              <div class="faq-answer" id="faq-answer-3">
                 The surgical microscope magnifies the inside of the tooth up to 25 times
                 with LED illumination. This lets us find hidden canals, clean the
                 infection through a smaller opening, and finish most cases in one
@@ -816,11 +876,11 @@
             </div>
 
             <div class="faq-item">
-              <button type="button" class="faq-question" onclick="toggleFaq(this)">
+              <button type="button" class="faq-question" aria-expanded="false" aria-controls="faq-answer-4" onclick="toggleFaq(this)">
                 <span>Where exactly are you located?</span>
-                <span>+</span>
+                <span aria-hidden="true">+</span>
               </button>
-              <div class="faq-answer">
+              <div class="faq-answer" id="faq-answer-4">
                 No. 66/113, AA Block, 1st Floor, 4th Avenue, Shanthi Colony, Anna Nagar,
                 Chennai 600 040. Street parking is available outside the building.
               </div>
@@ -830,11 +890,12 @@
       </div>
     </section>
 
-    <section class="section section-pure" id="booking-section">
+    <section class="section ground-paper" id="booking-section">
       <div class="container">
         <div class="booking-location-grid">
           <div class="booking-form-card">
-            <h2 style="font-family:var(--font-display); font-size:1.6rem; font-weight:600; color:var(--ink-950); letter-spacing:-0.01em; margin-bottom:8px;">
+            <p class="eyebrow"><span class="mark" aria-hidden="true"></span>08 — Visit and booking</p>
+            <h2>
               Request an appointment
             </h2>
             <p style="font-size:0.94rem; color:var(--ink-600); margin-bottom:28px;">
@@ -940,7 +1001,7 @@
           </div>
 
           <div class="location-info-card" id="location-section">
-            <h3 style="font-family:var(--font-display); font-size:1.4rem; font-weight:600; color:var(--ink-950); letter-spacing:-0.01em; margin-bottom:10px;">
+            <h3>
               Shanthi Colony, Anna Nagar
             </h3>
             <p style="font-size:0.95rem; color:var(--ink-600); margin-bottom:24px; line-height:1.6;">
@@ -951,38 +1012,38 @@
             <div class="contact-method-cards">
               <a href="tel:+919597767768" class="contact-action-row">
                 <div>
-                  <span style="font-size:0.76rem; color:var(--ink-600); font-weight:500; display:block; letter-spacing:0.04em; text-transform:uppercase; margin-bottom:2px;">Mobile and WhatsApp</span>
-                  <strong style="font-size:1rem; color:var(--ink-950); font-weight:600;">+91 95977 67768</strong>
+                  <span class="contact-key">Mobile and WhatsApp</span>
+                  <strong>+91 95977 67768</strong>
                 </div>
                 <span>Call</span>
               </a>
 
               <a href="tel:+914431666800" class="contact-action-row">
                 <div>
-                  <span style="font-size:0.76rem; color:var(--ink-600); font-weight:500; display:block; letter-spacing:0.04em; text-transform:uppercase; margin-bottom:2px;">Clinic landline</span>
-                  <strong style="font-size:1rem; color:var(--ink-950); font-weight:600;">+91 44 3166 6800</strong>
+                  <span class="contact-key">Clinic landline</span>
+                  <strong>+91 44 3166 6800</strong>
                 </div>
                 <span>Call</span>
               </a>
 
               <a href="mailto:drraguraamramesh@gmail.com" class="contact-action-row">
                 <div>
-                  <span style="font-size:0.76rem; color:var(--ink-600); font-weight:500; display:block; letter-spacing:0.04em; text-transform:uppercase; margin-bottom:2px;">Email</span>
-                  <strong style="font-size:0.9rem; color:var(--ink-950); font-weight:600;">drraguraamramesh@gmail.com</strong>
+                  <span class="contact-key">Email</span>
+                  <strong>drraguraamramesh@gmail.com</strong>
                 </div>
                 <span>Email</span>
               </a>
             </div>
 
             <div style="margin:24px 0; font-size:0.88rem;">
-              <strong style="color:var(--ink-950); display:block; margin-bottom:10px; font-weight:600;">Clinic hours</strong>
-              <div style="display:flex; justify-content:space-between; color:var(--ink-600); padding:6px 0; border-bottom:1px solid var(--border-light);">
+              <strong class="hours-title">Clinic hours</strong>
+              <div style="display:flex; justify-content:space-between; color:var(--ink-600); padding:8px 0; border-bottom:1px solid var(--rule-paper);">
                 <span>Monday to Saturday</span>
-                <strong style="color:var(--ink-950); font-weight:600;">9:30 AM to 8:30 PM</strong>
+                <strong>9:30 AM to 8:30 PM</strong>
               </div>
               <div style="display:flex; justify-content:space-between; color:var(--ink-600); padding:6px 0;">
                 <span>Sunday</span>
-                <strong style="color:var(--ink-950); font-weight:600;">By appointment</strong>
+                <strong>By appointment</strong>
               </div>
             </div>
 
