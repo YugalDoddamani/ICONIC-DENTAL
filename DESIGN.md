@@ -41,7 +41,7 @@ unambiguous.
 | Dial | Value | Why |
 |---|---|---|
 | **DESIGN_VARIANCE** | **7** | Below the 8 marketing default because this is medical and people need to feel the grid is dependable. Above 6 because the current page has *no* compositional idea: the hero is an 880px centred column on every breakpoint (`.hero-grid { display:block; max-width:880px }` — the "two-column hero" never actually renders). One strong off-centre hero, a numbered index, and a 12-column discipline everywhere else. |
-| **MOTION_INTENSITY** | **5** | Below the 6 default. Authored motion is roughly a 3: hairline reveals and a lens that follows a cursor. The dial reads 5 only because the one signature interaction is *direct* — it responds at the speed of the hand. Nothing on this page moves by itself. No parallax, no Ken Burns, no carousels, no scroll-jacking, no counters ticking up. |
+| **MOTION_INTENSITY** | **6** | The page now carries a real motion layer, most of it built in the `TASK` pass rather than here: a 0.7s / 22px scroll reveal on 25 elements with `--d` stagger, a hero load stagger, stat counters, a header that shrinks 84px → 60px on scroll, plus the entrance cover and the loupe. That is genuinely more than 5, but it stops at 6 because everything is either **one-time** (reveals unobserve themselves) or **direct** (the loupe, the comparator drag). Still no parallax, no Ken Burns, no carousels, no scroll-jacking, and nothing loops. |
 | **VISUAL_DENSITY** | **6** | Above the 4 default, on purpose. The differentiator is evidence, so the page carries more data than a typical landing page: a five-cell instrument readout, a numbered treatment index, a credential ledger, a protocol ledger. The rule that keeps it from becoming a cockpit: **density lives only in mono ledgers and spec rows — never in body copy.** Paragraphs stay at 62ch on a 1.62 line height. |
 
 ---
@@ -62,13 +62,37 @@ specific mistake this page already made.
    the visual language of a stock photo agency, not of this practice.
 4. **No three equal feature cards with line icons in circles.** The
    "what to expect" list is a ruled protocol ledger instead.
-5. **No glassmorphism, no backdrop-blur, no frosted pills.** The header
-   currently ships `backdrop-filter: blur(8px)`; it's removed. A clinic promises
-   clarity — nothing on this page is ever blurry.
+5. **No glass as a default surface. Glass only where it refracts something.**
+   *Revised — this was a flat ban on `backdrop-filter`, at the client's request.*
+   The original reasoning stands and is why the rule is now narrow rather than
+   gone: on a flat ground, frosted glass renders as a slightly-lighter grey
+   rectangle, so you pay the GPU cost and get no effect. Glass needs
+   *substructure*. So there are exactly **four panes** on this page, and each one
+   is over a photograph or over moving content:
+
+   | Pane | Sits over | Tint |
+   |---|---|---|
+   | `.site-header` | the hero plate and the paper sections scrolling under it | 62% when scrolled, 86% at rest |
+   | `.sticky-mobile-bar` | scrolling content, but carries the primary CTAs | 86% (near-opaque on purpose) |
+   | `.plate-anno` | the hero photograph | 50% |
+   | `.gallery-caption` | six clinic photographs, static | 50% |
+
+   Everything else — the booking card, the cleaning selector, treatment rows,
+   review cards, the readout cells, and **the mobile drawer** — stays solid. The
+   drawer is the tell: it is the most tempting place to use glass and the worst
+   one, because a full-height pane sliding on `transform` while compositing a
+   backdrop filter is exactly the combination that janks on mid-range Android.
+   A rule is only a rule if it costs you something you wanted.
 6. **No rounded-everything.** Radii are `2px`, and `0` for data rows. The only
    round object on the page is the loupe lens, because a lens is round by nature.
    Review avatars became 2px initials chips; the status dot became a square pip.
-7. **No shadows on black.** Black is edged with hairlines, never lifted.
+   The glass panes do not get an invented corner either — a `12px` radius exists
+   nowhere else in the system, and one element is not a vocabulary.
+7. **No shadows on the black grounds.** Black is edged with hairlines, never
+   lifted. Shadows do exist elsewhere — `--shadow-sm` / `--shadow-md` are real
+   values because `styles.css` uses them on button hover and the shrinking
+   header. Nulling a token another layer depends on is invisible breakage, and
+   it is worse than a two-pixel shadow.
 8. **No white text on a saturated fill.** Brass and WhatsApp green both take a
    near-black label. This is also an accessibility fix: the current
    `.btn-whatsapp` is white on `#1fa855` = **3.09:1 — below AA.**
@@ -82,8 +106,20 @@ specific mistake this page already made.
 11. **No urgency mechanics.** No countdowns, no "only 2 slots left", no discount
     badges, no exclamation marks. Ever.
 12. **No decorative star-glyph rows.** One rating, one number, one source.
-13. **No motion the user cannot stop.** Nothing animates on scroll except a
-    one-time 240ms hairline and eyebrow reveal.
+13. **No motion the user cannot stop.** *Revised twice — reveals are allowed, with
+    bounds.* Scroll reveals are permitted and they have to earn the dial:
+    one-time (they unobserve themselves), one direction, staggered, and fully
+    absent under `prefers-reduced-motion`. Banned outright: the fake loading
+    timer, `position: sticky` scroll-jacking, elements that animate off-screen
+    and back, and **any loader that outlives the work it is covering**. The
+    entrance cover waits on real events (fonts, `load`, hero decode) with a 320ms
+    floor and a 1400ms ceiling — it is a cover, not a toll booth.
+14. **A counter must not dramatise a number you cannot defend.** The `TASK 12`
+    stat counters are a client decision and they stay — but note the interaction:
+    counting `2,000+` and `4,000+` up from zero draws *more* attention to figures
+    flagged in §3.9 as unsourced, and turning an unverified number into a
+    performance makes it feel like a claim. If the counters stay, the numbers
+    need a source first.
 
 ---
 
@@ -215,24 +251,62 @@ paper  · 08 booking + visit  (hairline between, not a tone change)
 SCOPE  · footer + sticky action bar                  ← the instrument closes
 ```
 
-### 4.6 Motion intent — MOTION_INTENSITY 5
+### 4.6 Motion intent — MOTION_INTENSITY 6
 
-**Moves:**
-- The loupe, pointer-driven, ~90ms follow with instant start. The only element
-  with real personality.
-- The brass focus ring: 2px, 2px offset, `--brass-300` on black / `--brass-700`
-  on paper. Identical on every focusable element.
-- One-time section reveal: hairline draws 240ms, eyebrow rises 6px. Triggered by
-  `IntersectionObserver`, staggered 60ms, once per section, never per card.
-- The before/after comparator: user-driven drag only.
+The motion layer is split across two files, and after the merge it is important
+to know which is which: **`styles.css` + `app.js` own all scroll state** (the
+`TASK` pass), and **`system.css` owns the entrance cover and the glass, and no
+scroll state at all.** That split is deliberate — it is what stopped two reveal
+systems fighting.
 
-**Stays still:** the hero photograph (no Ken Burns, no parallax, no zoom-on-hover
-— the loupe is the opt-in version), every gallery image, all body text, all form
-controls, the header (no shrink-on-scroll, no hide-show).
+**Owned by `styles.css` / `app.js` (the `TASK` pass):**
+- **Scroll reveal** — 25 elements tagged `.reveal`, hidden at `opacity: 0` and
+  `translateY(22px)`, revealed at 0.7s on `cubic-bezier(.16, 1, .3, 1)` with a
+  `--d` per-element delay. The observer disconnects each element as it lands, so
+  nothing re-animates on scroll-back.
+- **Hero load stagger** — the `rise` keyframe across `.eyebrow`, `.statement`,
+  `.lede`, `.hero-cta-group`, `.hero-credit`.
+- **Header state** — `updateHeaderState()` toggles `.scrolled` past 8px, which
+  shrinks `.header-inner` from 84px to 60px and adds a hairline shadow.
+- **Stat counters** — `countUp()`, jumping straight to the final value under
+  reduced motion. See §3.14 for the compliance caveat.
+- **Scrollspy** — `updateScrollSpy()` marks the active nav link from
+  `data-target`.
 
-**Reduced motion:** the lens works but stops animating; `scroll-behavior: smooth`
-is switched off; all durations collapse to ~0. The comparator still drags,
-because the user is the one driving it.
+**Owned by `system.css` (this pass):**
+- **The entrance cover.** A cover, not a toll booth — it hides the webfont swap
+  and the hero decode, which on a cold cache is real work. Duration is set by the
+  page: **320ms floor** (so the reticle and wordmark read on a warm cache) and a
+  **1400ms ceiling** (so a slow connection never waits on decoration), raced
+  against `document.fonts.ready`, `window.load` and the hero image decode.
+  Three independent escapes: `<noscript>` in the head removes it outright when JS
+  is off, a CSS keyframe clears it at 2.4s if JS dies mid-flight, and
+  `transitionend` plus a timeout guarantee the node is removed. It is
+  `aria-hidden`, so a screen reader goes straight to the phone number. There is
+  deliberately **no scroll lock** — a 320ms cover does not need one, and every
+  lock is a chance to strand someone on an unscrollable page.
+- **The header's glass tint**, applied through the `.scrolled` class `app.js`
+  already sets. The shrink and the tint compose; they are the same signal, so
+  there is no second scroll listener.
+- **The loupe**, pointer-driven, ~90ms follow with instant start.
+
+**Reduced motion:** both layers honour it. The `TASK` reveal, the stagger and
+the counters all collapse or jump to their final state; the lens still works
+because it is direct manipulation, but stops animating; the cover hides
+instantly rather than fading; `scroll-behavior: smooth` is off.
+
+**The performance caveat I cannot test from here.** `backdrop-filter` is
+composited per frame, and the header re-composites on every scroll frame on
+mobile — which now also has a `min-height` transition running on the same
+element. That is why the two fixed surfaces take a **smaller blur (8px)** than
+the two static ones (12px), why the six gallery captions are static compositing
+rather than per-frame, and why the drawer never got a pane. The panes take the
+system radius rather than an invented `12px` corner, because one element is not
+a vocabulary of roundness. The `@supports` guard means browsers without
+`backdrop-filter` get an opaque bar rather than a see-through one. **Profile this
+on a real mid-range Android.** If it drops frames, delete the header's
+`@supports` block and keep the tint — the page still reads, because the tint is
+the base layer.
 
 ### 4.7 Voice
 
@@ -256,7 +330,8 @@ Same taste, in words.
 - Refuses to look like a spa, a salon, or a "smile studio".
 - Refuses warm parchment + gold hairline "premium clinic" (its own previous state).
 - Refuses stock white-coat models, teal blobs, "450+ Happy Patient" badges.
-- Refuses gradients on text, glass, blur, glow, drop shadows.
+- Refuses gradients on text, glass, blur, glow, drop shadows — outside the four
+  panes §3.5 allows, and there only because there is something behind them.
 - Refuses scarcity and discount mechanics.
 - Refuses illustration or stock where a real photograph of this room exists.
 - Refuses motion the user can't stop.
@@ -292,7 +367,7 @@ Ordered by impact per unit of risk. Items 1–8 are the next implementation pass
    these nine treatments, or delete `.service-img-wrap` from non-featured rows
    entirely — a stock thumbnail at 84px adds nothing and dilutes the evidence.
 8. **Section-by-section refinements** against the ground rhythm in §4.5, then
-   delete the superseded rules from `styles.css` (§6 fold-in).
+   delete the superseded rules from `styles.css` (Appendix C).
 9. **Accessibility pass.** ✔ `aria-expanded` on the FAQ, ✔ `aria-pressed` on both
    filter groups, ✔ decorative stars hidden from assistive tech, ✔ `.sr-only`
    utility added, ✔ global `:focus-visible`, ✔ AA-failing white-on-green buttons
@@ -303,6 +378,14 @@ Ordered by impact per unit of risk. Items 1–8 are the next implementation pass
     `height` to every image (hero plate done ✔) to stop CLS, add `loading="lazy"`
     to the gallery ✔, then run Lighthouse on 4G throttling — LCP should be the
     hero plate, and it's a 250 KB portrait JPEG that deserves a 900×1200 WebP.
+    **Two new items, both from the glass and motion layer:** (a) measure the
+    entrance cover's effect on LCP — the ceiling is 1400ms, so on a slow
+    connection the *cover* is the LCP element, and if that shows up in field
+    data the honest fix is to lower the ceiling, not to raise the floor; (b)
+    profile scroll on a real mid-range Android with the header pane active, since
+    that is the one surface re-compositing the backdrop filter every frame. If it
+    drops frames, remove the header's `@supports` block and keep the tint — the
+    page still reads, because the tint is the base layer.
 11. **Sharing.** ✔ OG + Twitter card meta added, with a `theme-color`. Still
     needs a real 1200×630 crop, because WhatsApp is this clinic's main booking
     channel and a bare link converts far worse than a photo card.
@@ -332,17 +415,94 @@ Real issues found while specifying this. Ordered by cost to the clinic.
 | A11 | **19 inline colour declarations** fight any token system. | grep | Checklist step 13 |
 | A12 | **Two identical white sections in a row** (`#transformations-section` and `#gallery-section` both `.section-pure`). Rhythm flat spot. | `index.html` | Fixed by the ground rhythm |
 
-## Appendix B — What landed in this session
+## Appendix B — What landed, and where it lives
 
-- `system.css` — the taste layer (new, ~1550 lines).
-- `index.html` — hero rebuilt, ground classes, section eyebrows with
-  numbered register marks, `og:`/`theme-color`, ARIA fixes, `width`/`height` on
-  the hero image, loupe mounts, an "Illustrative comparison · not a clinic
-  patient" label on the stocked before/after pair, nav trimmed from 7 to 6 items.
-- `app.js` — the loupe component (self-contained IIFE), plus
-  `aria-expanded`/`aria-pressed` state now kept in sync by the existing handlers.
-- Untouched on purpose: `styles.css`. The direction is delivered as an
-  additive layer so it can be reviewed and reverted as one file.
+- `system.css` — the taste layer. **This pass contributes two things: the four
+  glass panes (§1–20) and the entrance cover.** Everything else in the file is
+  the original design direction: tokens, grounds, type rules, the hero, the
+  ledgers. It deliberately owns no scroll state.
+- `index.html` — this pass adds only the cover markup and the `js` flag plus
+  `<noscript>` guard. Everything else (hero, eyebrows, grounds, nav, ARIA,
+  `data-target`, `--i` staggers, drawer `aria-hidden`) is the design direction
+  plus the `TASK` pass.
+- `app.js` — this pass adds the cover controller and **restores the loupe
+  component the re-upload dropped**. The `TASK` pass owns everything else.
+- `styles.css` — **untouched by this pass, on purpose.** All 35 `TASK` markers
+  are preserved exactly as they were.
+- `DESIGN.md` — new here, then revised to describe the merged reality rather than
+  the direction as first authored. Where the `TASK` pass overrode a rule, the
+  rule is marked *Revised* and the reason is given, because a design document
+  that quietly disagrees with the code is worse than no document.
+
+### Why the glass is limited to four panes
+
+Asked for glassmorphism, I built glass where it does something and left it out
+everywhere else. Three findings drove that:
+
+1. **Glass over a flat ground is a grey box.** A frosted panel with nothing
+   behind it to refract costs compositing and reads as a slightly lighter
+   rectangle. The two-ground system is deliberately flat, so on the paper and
+   black fields there was genuinely nothing for glass to do — the four panes are
+   the only places with a photograph or moving content underneath.
+2. **The drawer was the trap.** A full-height panel sliding on `transform` while
+   compositing a backdrop filter is the classic mid-range-Android jank combo, and
+   mid-range Android is a large share of this clinic's mobile traffic. It stays
+   solid.
+3. **Legibility outranks effect on anything conversion-critical.** The sticky
+   bar carries Call / WhatsApp / Book, so it sits at 86% tint — glass, but glass
+   you cannot see through. The two fixed surfaces also use a *smaller* blur
+   radius than the static ones, because they recomposite on every scroll frame.
+
+Every pane ships a solid tint as its base layer and adds blur inside an
+`@supports` block, so a browser without `backdrop-filter` gets an opaque bar
+rather than an unreadable one.
+
+## Appendix B2 — The merge, and three collisions it caused
+
+This branch was rebased onto `60ca33e`, which is a **fresh root commit**: the
+merged design work re-uploaded, plus a parallel `TASK` pass through `styles.css`
+and `app.js`. That pass is real work and it is preserved in full — all 35 `TASK`
+markers, the scrollspy, the counters, the shrinking header, the drawer a11y. What
+follows is what nearly went wrong, recorded because each one is a class of
+mistake, not an incident.
+
+**1. The one that would have shipped broken.** The `TASK` pass revealed elements
+with `.reveal` → `.in`. This pass had independently written `.reveal` →
+`.is-in`. The selectors were not equal:
+
+```
+.reveal.in      specificity (0,2,0)   <- the TASK pass
+html.js .reveal specificity (0,2,1)   <- this pass
+```
+
+`html.js .reveal` sets `opacity: 0`. It wins the cascade. So shipping this pass's
+reveal CSS unchanged would have pinned **25 elements at opacity 0 permanently**,
+on every browser, with no console error and nothing visibly wrong in a diff —
+the page would simply have sections that never appear. The duplicate reveal
+system was deleted rather than reconciled. **Two implementations of the same idea
+is not redundancy; it is a race.**
+
+**2. Two scroll states for one element.** `updateHeaderState()` already toggled
+`.scrolled` past 8px. This pass added `headerState()` toggling `.is-scrolled`
+past 24px. Both would have run, both would have worked, and the header would have
+had two opinions about itself with no single owner. The duplicate listener was
+deleted and the glass tint now rides `.scrolled`, so there is exactly one scroll
+listener and the shrink and the tint compose as one signal.
+
+**3. A silent regression already live on main.** The re-uploaded `app.js` **lost
+the loupe component** — zero references — while `index.html` kept 14 mounts and
+`system.css` kept 10 rules for it. So on main, the signature interaction was
+dead: markup present, CSS present, no initialiser, no error. It is restored. Worth
+noting *why* it went unnoticed: a decorative enhancement that fails silently is
+indistinguishable from an enhancement nobody scrolled to. If it had been the
+booking form, someone would have noticed in minutes.
+
+**4. A token value that would have nulled someone else's work.**
+`--shadow-sm`/`--shadow-md` were set to `none` under this pass's "zero elevation"
+rule — but `styles.css` uses them on button hover and the shrinking header. The
+shadows would have silently vanished. The tokens now carry real, very subtle
+values, and rule 7 in §3 was narrowed to black grounds only. **A design system
+that overrides another layer's variables must check who else depends on them.**
 
 ## Appendix C — Fold-in plan
 

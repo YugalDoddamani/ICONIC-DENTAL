@@ -461,3 +461,195 @@ function loadMap() {
   facade.innerHTML = '';
   facade.appendChild(iframe);
 }
+/* --------------------------------------------------------------------------
+   The loupe — signature interaction
+   --------------------------------------------------------------------------
+   A magnifying lens that follows the pointer over a `.loupe` plate and shows
+   the same photograph at Nx. The clinic sells magnification, so the interface
+   demonstrates it rather than describing it.
+
+   Progressive enhancement: the lens is aria-hidden and decorative; every plate
+   keeps a full alt text, so nothing is available only inside the lens. Fine
+   pointers follow the cursor, coarse pointers tap to pin, and reduced-motion
+   users get an instant, unanimated lens.
+   -------------------------------------------------------------------------- */
+(function initLoupes() {
+  const hosts = document.querySelectorAll('.loupe[data-loupe]');
+  if (!hosts.length) return;
+
+  const finePointer = window.matchMedia('(pointer: fine)').matches;
+
+  hosts.forEach((host) => {
+    const img = host.querySelector('img');
+    const lens = host.querySelector('.loupe-lens');
+    if (!img || !lens) return;
+
+    const readout = lens.querySelector('[data-read]');
+    const zoom = parseFloat(host.dataset.loupe) || 2;
+    if (readout) readout.textContent = zoom + '\u00d7';
+
+    let box = { w: 0, h: 0 };      // plate box, CSS px
+    let disp = { w: 0, h: 0 };     // image size after object-fit: cover
+    let off = { x: 0, y: 0 };      // cover crop offset
+    let radius = 0;
+    let pinned = false;
+
+    function measure() {
+      const rect = host.getBoundingClientRect();
+      const nw = img.naturalWidth;
+      const nh = img.naturalHeight;
+      if (!rect.width || !rect.height || !nw || !nh) return false;
+
+      box = { w: rect.width, h: rect.height };
+      const scale = Math.max(box.w / nw, box.h / nh);   // object-fit: cover
+      disp = { w: nw * scale, h: nh * scale };
+      off = { x: (box.w - disp.w) / 2, y: (box.h - disp.h) / 2 };
+      radius = lens.offsetWidth / 2;
+      return true;
+    }
+
+    function place(clientX, clientY) {
+      const rect = host.getBoundingClientRect();
+      const px = clientX - rect.left;
+      const py = clientY - rect.top;
+
+      const diameter = radius * 2;
+      // The glass cannot travel past the frame, so near an edge it sits at the
+      // edge while the pointer keeps going. Everything below is derived from the
+      // glass centre, so what you see under the lens is always what is there.
+      const x = Math.max(0, Math.min(box.w - diameter, px - radius));
+      const y = Math.max(0, Math.min(box.h - diameter, py - radius));
+      const cx = x + radius;
+      const cy = y + radius;
+
+      lens.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+
+      const scaledW = disp.w * zoom;
+      const scaledH = disp.h * zoom;
+      let bgX = -((cx - off.x) * zoom - radius);
+      let bgY = -((cy - off.y) * zoom - radius);
+
+      bgX = Math.max(-(scaledW - diameter), Math.min(0, bgX));
+      bgY = Math.max(-(scaledH - diameter), Math.min(0, bgY));
+
+      lens.style.backgroundSize = `${scaledW}px ${scaledH}px`;
+      lens.style.backgroundPosition = `${bgX}px ${bgY}px`;
+    }
+
+    function paint() {
+      lens.style.backgroundImage = `url("${img.currentSrc || img.src}")`;
+    }
+
+    function show(on) {
+      if (on && !measure()) return;
+      lens.classList.toggle('is-lensing', !!on);
+      host.classList.toggle('is-lensing', !!on);
+      if (!on && pinned) pinned = false;
+    }
+
+    if (img.complete) paint();
+    else img.addEventListener('load', paint, { once: true });
+
+    // Fine pointers: follow. Touch: tap to pin, tap again to release.
+    if (finePointer) {
+      host.addEventListener('pointerenter', (e) => {
+        paint();
+        show(true);
+        place(e.clientX, e.clientY);
+      });
+      host.addEventListener('pointermove', (e) => {
+        if (!lens.classList.contains('is-lensing')) return;
+        place(e.clientX, e.clientY);
+      });
+      host.addEventListener('pointerleave', () => show(false));
+    } else {
+      host.addEventListener('pointerdown', (e) => {
+        paint();
+        pinned = !pinned;
+        show(pinned);
+        if (pinned) place(e.clientX, e.clientY);
+      });
+      host.addEventListener('pointermove', (e) => {
+        if (!pinned) return;
+        e.preventDefault();
+        place(e.clientX, e.clientY);
+      }, { passive: false });
+    }
+
+    if ('ResizeObserver' in window) {
+      new ResizeObserver(() => { if (lens.classList.contains('is-lensing')) measure(); }).observe(host);
+    } else {
+      window.addEventListener('resize', () => { if (lens.classList.contains('is-lensing')) measure(); });
+    }
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && pinned) show(false);
+    });
+  });
+})();
+
+/* --------------------------------------------------------------------------
+   The entrance cover — a cover, not a toll booth.
+   --------------------------------------------------------------------------
+   Its duration is set by the page, not by a timer: it waits on real events (the
+   webfont swap, window.load, the hero decode) and is bounded at both ends — a
+   320ms floor so the reticle and the wordmark read on a warm cache, and a
+   1400ms ceiling so a slow connection never waits on decoration. The ceiling is
+   also the race, so one slow font can never hold the page shut.
+
+   Reduced motion needs no branch here: system.css section 20 collapses the fade
+   and zeroes the keyframe delay, so the cover is already gone by the time this
+   lifts it.
+
+   The node is removed, not just hidden — and by two routes, `transitionend`
+   plus a timeout, because a transition that never runs would otherwise leave it
+   in the DOM forever.
+   -------------------------------------------------------------------------- */
+(function entranceCover() {
+  const cover = document.getElementById('entranceCover');
+  if (!cover) return;
+
+  const FLOOR = 320;
+  const CEILING = 1400;
+  const start = performance.now();
+  let lifted = false;
+
+  function remove() {
+    if (cover.parentNode) cover.parentNode.removeChild(cover);
+  }
+
+  function lift() {
+    if (lifted) return;
+    lifted = true;
+
+    const wait = Math.max(0, FLOOR - (performance.now() - start));
+    window.setTimeout(() => {
+      cover.classList.add('is-lifting');
+      cover.addEventListener('transitionend', remove, { once: true });
+      window.setTimeout(remove, 700);
+    }, wait);
+  }
+
+  // Escape 3 is the keyframe in system.css; this covers a slow network, which
+  // the keyframe cannot know about.
+  window.setTimeout(lift, CEILING);
+
+  const hero = document.querySelector('.plate img');
+  const heroReady = hero && typeof hero.decode === 'function'
+    ? hero.decode().catch(() => {})
+    : Promise.resolve();
+
+  const fontsReady = document.fonts && document.fonts.ready
+    ? document.fonts.ready.catch(() => {})
+    : Promise.resolve();
+
+  const loaded = new Promise((resolve) => {
+    if (document.readyState === 'complete') resolve();
+    else window.addEventListener('load', resolve, { once: true });
+  });
+
+  Promise.race([
+    Promise.all([fontsReady, loaded, heroReady]),
+    new Promise((resolve) => window.setTimeout(resolve, CEILING)),
+  ]).then(lift);
+})();
