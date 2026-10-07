@@ -4,6 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ICONIC Dental &amp; Aesthetics | Dentist in Anna Nagar, Chennai</title>
+
+  <!-- The `js` flag, set before the stylesheets so the entrance cover is never
+       painted for a browser that cannot dismiss it. Nothing else keys on it. -->
+  <script>document.documentElement.classList.add('js');</script>
+  <!-- Escape 1 of 3 for the entrance cover: with JS off it does not exist. -->
+  <noscript><style>.entrance-cover { display: none !important; }</style></noscript>
   <meta name="description" content="Ultrasonic cleaning, microscopic root canals, aligners and implants at ICONIC Dental & Aesthetics, Shanthi Colony, Anna Nagar. Led by Dr. Raguraam A Ramesh (BDS, FCE, MFM, MS). Call or WhatsApp +91 95977 67768." />
 
   <!-- Type: Instrument Serif (display statements only), IBM Plex Sans (UI and
@@ -61,6 +67,19 @@
   </script>
 </head>
 <body>
+
+  <!-- The entrance cover. It hides the webfont swap and the hero decode, then
+       gets out of the way — 320ms floor, 1400ms ceiling, both enforced by the
+       controller in app.js. Decorative: aria-hidden, no scroll lock, and
+       pointer-events: none, so it can never trap a click. Two more escapes live
+       in the head (<noscript>) and in system.css (the 2400ms keyframe). -->
+  <div class="entrance-cover" id="entranceCover" aria-hidden="true">
+    <div class="entrance-plate">
+      <span class="entrance-reticle" aria-hidden="true"></span>
+      <span class="entrance-wordmark">ICONIC</span>
+      <span class="entrance-meta">Dental &amp; Aesthetics · Anna Nagar</span>
+    </div>
+  </div>
 
   <div id="site-viewport-wrapper">
 

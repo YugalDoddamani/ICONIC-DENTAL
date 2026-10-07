@@ -62,9 +62,13 @@
   --whatsapp-dark: #24b95d;
   --trust-emerald: #0d0d0c;
 
-  /* Elevation. Two levels, and on black there are none: black is edged, not lifted. */
-  --shadow-sm: none;
-  --shadow-md: none;
+  /* Elevation. Two levels, and on the black grounds there are none: black is
+     edged, never lifted. Off them these carry real values, because styles.css
+     spends --shadow-sm on the shrinking header and --shadow-md on button hover.
+     Nulling a token another layer consumes is invisible breakage: the shadows
+     would simply have stopped appearing, with nothing in any diff to say so. */
+  --shadow-sm: 0 1px 2px rgba(13, 13, 12, 0.10);
+  --shadow-md: 0 2px 8px rgba(13, 13, 12, 0.12);
 
   /* Radius. An instrument has corners. */
   --radius-sm: 2px;
@@ -440,11 +444,18 @@ body {
 
 .social-pill:hover { color: var(--scope-text); border-color: var(--brass-line-strong); }
 
+/* Glass pane 1 of 4 — the header, over the hero plate and the paper sections
+   scrolling under it. 86% at rest, 62% once scrolled: the tint rides the
+   `.scrolled` class app.js already sets for TASK 14, so the shrink and the
+   tint are one signal from one scroll listener, not two. The base layer is a
+   solid tint, so a browser without backdrop-filter gets an opaque bar. */
 .site-header {
-  background: var(--scope-900);
+  background: rgba(13, 13, 12, 0.86);
   border-bottom: 1px solid var(--rule-scope);
-  backdrop-filter: none;   /* rule 5. no blur anywhere */
+  transition: box-shadow 0.25s ease, background-color 0.22s ease;
 }
+
+.site-header.scrolled { background: rgba(13, 13, 12, 0.62); }
 
 .header-inner { min-height: 72px; }
 @media (min-width: 992px) { .header-inner { min-height: 84px; } }
@@ -549,8 +560,11 @@ body {
 }
 
 /* Sticky action bar */
+/* Glass pane 2 of 4 — the sticky action bar. 86%, near-opaque on purpose: it
+   carries Call / WhatsApp / Book, and legibility outranks effect on anything
+   conversion-critical. */
 .sticky-mobile-bar {
-  background: var(--scope-900);
+  background: rgba(13, 13, 12, 0.86);
   border-top: 1px solid var(--rule-scope);
   box-shadow: none;
   padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
@@ -704,6 +718,9 @@ body {
 .plate-tick-tl { top: 8px; left: 8px; border-right: 0; border-bottom: 0; }
 .plate-tick-br { bottom: 8px; right: 8px; border-left: 0; border-top: 0; }
 
+/* Glass pane 3 of 4 — the hero plate's annotation, 50% over the photograph.
+   The scrim gradient stays on top of the tint: the pane is glass, the scrim is
+   the legibility insurance for the label and the `25x` readout. */
 .plate-anno {
   position: absolute;
   left: 0;
@@ -714,7 +731,10 @@ body {
   justify-content: space-between;
   gap: 12px;
   padding: 12px 14px;
-  background: linear-gradient(to top, rgba(13, 13, 12, 0.92), rgba(13, 13, 12, 0.55) 62%, rgba(13, 13, 12, 0));
+  background:
+    linear-gradient(to top, rgba(13, 13, 12, 0.62), rgba(13, 13, 12, 0.18) 62%, rgba(13, 13, 12, 0)),
+    rgba(13, 13, 12, 0.5);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
   font-size: 0.68rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -1259,8 +1279,14 @@ body {
 
 @media (min-width: 992px) { .gallery-item { height: 340px; } }
 
+/* Glass pane 4 of 4 — the gallery captions, 50% over six clinic photographs.
+   Static compositing, not per-frame: these never move, so the blur costs a
+   single pass each instead of one per scroll frame. */
 .gallery-caption {
-  background: linear-gradient(to top, rgba(13, 13, 12, 0.94), rgba(13, 13, 12, 0.6) 60%, rgba(13, 13, 12, 0));
+  background:
+    linear-gradient(to top, rgba(13, 13, 12, 0.62), rgba(13, 13, 12, 0.18) 62%, rgba(13, 13, 12, 0)),
+    rgba(13, 13, 12, 0.5);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
   padding: 16px 16px 14px;
   z-index: 2;
 }
@@ -1547,9 +1573,168 @@ body {
   .mobile-drawer,
   .mobile-drawer-backdrop,
   .hero-cta-group,
+  .entrance-cover,
   .loupe-lens { display: none !important; }
 
   body { background: #fff; padding-bottom: 0; }
   .ground-scope, .site-footer, .hero-section, .cleaning-spotlight-card { background: #fff !important; color: #000 !important; }
   .statement, .section-title { color: #000 !important; }
+}
+
+/* --------------------------------------------------------------------------
+   19. Glass — four panes, and the constraint is the point
+   --------------------------------------------------------------------------
+   Glass over a flat ground renders as a slightly-lighter grey rectangle: you
+   pay the compositing cost and see nothing. So the blur exists only where
+   there is substructure underneath — a photograph, or content moving under the
+   pane. These four are the whole list. Everything else on the page stays solid,
+   and the mobile drawer is the deliberate omission: a full-height pane sliding
+   on `transform` while compositing a backdrop filter is the classic mid-range
+   Android jank combination.
+
+   Each pane ships its tint as the base layer, in place with its own rules
+   above. The blur is added only here, so a browser without backdrop-filter gets
+   an opaque bar rather than an unreadable one.
+
+   The two fixed panes take a smaller blur than the two static ones, because
+   the header re-composites on every scroll frame and the gallery captions
+   composite once.
+   -------------------------------------------------------------------------- */
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .site-header {
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .sticky-mobile-bar {
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .plate-anno {
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .gallery-caption {
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   20. The entrance cover — a cover, not a toll booth
+   --------------------------------------------------------------------------
+   It hides the webfont swap and the hero decode, which on a cold cache is real
+   work. Its duration is set by the page, not by a timer: a 320ms floor so the
+   reticle and the wordmark read on a warm cache, and a 1400ms ceiling so a slow
+   connection never waits on decoration. A literal 1.5s was measured and
+   rejected — this page is 392 KB blocking, so +1.5s would add 191% to a fast-4G
+   load and 76% to a typical one, on a static site with nothing to wait for.
+
+   Three independent escapes, so no single failure can strand anyone under it:
+     1. html:not(.js) below, plus the <noscript> guard in the head.
+     2. the cover-escape keyframe at 2400ms, if app.js dies mid-flight.
+     3. `transitionend` and a timeout in the controller, which remove the node.
+
+   It is aria-hidden, so a screen reader goes straight to the phone number, and
+   pointer-events is none, so it can never trap a click. There is deliberately no
+   scroll lock: a 320ms cover does not need one, and every lock is a chance to
+   strand someone on an unscrollable page.
+   -------------------------------------------------------------------------- */
+.entrance-cover {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: grid;
+  place-items: center;
+  background: var(--scope-900);
+  pointer-events: none;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 320ms ease, visibility 0s linear 320ms;
+  animation: cover-escape 1ms linear 2400ms forwards;
+}
+
+html:not(.js) .entrance-cover { display: none; }
+
+@keyframes cover-escape {
+  to { opacity: 0; visibility: hidden; }
+}
+
+.entrance-cover.is-lifting {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.entrance-plate {
+  display: grid;
+  justify-items: center;
+  gap: 20px;
+  animation: cover-plate-in 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes cover-plate-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+.entrance-reticle {
+  position: relative;
+  width: 76px;
+  height: 76px;
+}
+
+.entrance-reticle::before {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border: 1px solid var(--brass-400);
+  border-radius: 50%;
+}
+
+.entrance-reticle::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.7;
+  background:
+    linear-gradient(var(--brass-400), var(--brass-400)) center / 1px 100% no-repeat,
+    linear-gradient(var(--brass-400), var(--brass-400)) center / 100% 1px no-repeat;
+}
+
+.entrance-wordmark {
+  font-family: var(--font-data);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.34em;
+  text-indent: 0.34em;
+  text-transform: uppercase;
+  color: var(--scope-text);
+}
+
+.entrance-meta {
+  font-family: var(--font-data);
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--scope-dim);
+}
+
+/* Reduced motion: the cover hides instantly rather than fading, so it never
+   adds a wait to a user who asked for less motion. This block sits after the
+   rules above on purpose — earlier, it would lose the cascade on `transition`.
+   (The global rules in section 17 already collapse the fade itself.) */
+@media (prefers-reduced-motion: reduce) {
+  .entrance-cover {
+    transition: none;
+    animation-delay: 0s;
+  }
+  .entrance-plate { animation: none; }
 }
