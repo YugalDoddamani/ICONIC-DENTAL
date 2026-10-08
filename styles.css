@@ -2082,3 +2082,56 @@ button, input, select, textarea {
     transform: none;
   }
 }
+
+
+/* ==========================================================================
+   FORM SUBMISSION — additive block for the booking-form fix.
+   Nothing above is modified; the user's 35 marked rules are untouched.
+   ========================================================================== */
+
+/* Submission status, announced with role="status". Sits under the buttons. */
+.form-status {
+  margin: 14px 0 0;
+  font-size: 0.86rem;
+  font-weight: 500;
+  color: var(--ink-600);
+}
+
+/* Small helper line under the date field. */
+.form-hint {
+  margin: 6px 0 0;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--ink-600);
+}
+
+/* In-flight submit. .btn sets cursor:pointer and has no disabled state, so
+   both are overridden explicitly. */
+.btn[disabled],
+.btn[disabled]:hover {
+  cursor: not-allowed;
+  opacity: 0.62;
+}
+
+.btn-gold[disabled],
+.btn-gold[disabled]:hover {
+  background: var(--gold-500);
+  color: var(--ink-950);
+}
+
+.btn-whatsapp[disabled],
+.btn-whatsapp[disabled]:hover {
+  background: var(--whatsapp-green);
+  color: #ffffff;
+}
+
+/* The outcome banner doubles as the failure state. The banner's success
+   colours are inline styles, so !important is required to beat them. */
+#bookingSuccessBanner.is-failed {
+  background: #fdf3f2 !important;
+  border-color: #b42318 !important;
+}
+
+#bookingSuccessBanner.is-failed #bookingSuccessHeading {
+  color: #b42318;
+}
