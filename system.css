@@ -1738,3 +1738,211 @@ html:not(.js) .entrance-cover { display: none; }
   }
   .entrance-plate { animation: none; }
 }
+
+/* --------------------------------------------------------------------------
+   21. Daylight pass — the same measured pattern, on a cooler and softer ground
+   --------------------------------------------------------------------------
+   The post-merge client direction is light and approachable: keep the grid,
+   type, evidence and interaction pattern intact, then re-point the palette.
+   The header is opaque white until the existing `.scrolled` state is set;
+   only then does it become frosted. Photo labels keep a white tint with enough
+   opacity to stay readable without backdrop-filter. Dual shadows are deliberately
+   soft, and the original three radius steps return. `btn-dark` remains the one
+   intentional dark surface.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Cool paper grounds */
+  --bg-ivory: #e8ebf2;
+  --bg-pure: #ffffff;
+  --bg-warm-card: #dfe5ef;
+  --paper-000: #ffffff;
+  --paper-100: #e8ebf2;
+  --paper-200: #dfe5ef;
+  --paper-300: #cfd8e6;
+  --neutral-100: #e1e6ef;
+
+  /* Dark ink remains for copy and the one dark CTA; the other former scope
+     surfaces are now cool paper. */
+  --ink-950: #0d0d0c;
+  --ink-900: #171b26;
+  --ink-800: #333d4e;
+  --ink-600: #4e5a6c;
+  --ink-500: #5a6678;
+  --ink-300: #c7d0df;
+  --scope-900: #e8ebf2;
+  --scope-850: #e4e8f0;
+  --scope-800: #dfe5ef;
+  --scope-750: #d5dde9;
+  --scope-text: #333d4e;
+  --scope-dim: #4e5a6c;
+  --scope-faint: #5a6678;
+
+  /* Brass stays the accent; the former on-black brass token becomes readable
+     on the new light grounds. */
+  --brass-300: #7c5f14;
+  --brass-700: #7c5f14;
+  --focus: #7c5f14;
+
+  --border-subtle: rgba(23, 27, 38, 0.22);
+  --border-light: rgba(23, 27, 38, 0.12);
+  --rule-paper: rgba(51, 61, 78, 0.15);
+  --rule-paper-soft: rgba(51, 61, 78, 0.08);
+  --rule-scope: rgba(51, 61, 78, 0.15);
+  --rule-scope-soft: rgba(51, 61, 78, 0.08);
+  --brass-line: rgba(124, 95, 20, 0.28);
+  --brass-line-strong: rgba(124, 95, 20, 0.5);
+  --ok-400: #287d4d;
+
+  /* Soft paired highlights and cool shadows: enough lift to read, never a
+     heavy card drop-shadow. */
+  --shadow-sm: 3px 3px 8px rgba(133, 145, 166, 0.22), -3px -3px 8px rgba(255, 255, 255, 0.78);
+  --shadow-md: 6px 6px 16px rgba(133, 145, 166, 0.24), -6px -6px 16px rgba(255, 255, 255, 0.86);
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+}
+
+/* Reset the old on-black text and border treatment on now-light surfaces. */
+.ground-scope .btn-outline,
+.section-dark .btn-outline,
+.cleaning-spotlight-card .btn-outline,
+.mobile-drawer .btn-outline,
+.site-footer .btn-outline {
+  color: var(--ink-950);
+  border-color: var(--border-subtle);
+}
+
+.ground-scope .btn-outline:hover,
+.section-dark .btn-outline:hover,
+.cleaning-spotlight-card .btn-outline:hover,
+.mobile-drawer .btn-outline:hover,
+.site-footer .btn-outline:hover {
+  color: var(--brass-700);
+  border-color: var(--brass-600);
+}
+
+/* Solid at rest; the existing `.scrolled` hook gets the white frost. */
+.site-header {
+  background: #ffffff;
+  border-bottom-color: var(--rule-paper);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.site-header.scrolled {
+  background: rgba(255, 255, 255, 0.86);
+  border-bottom-color: rgba(51, 61, 78, 0.1);
+  box-shadow: var(--shadow-sm);
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .site-header.scrolled {
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+}
+
+.mobile-drawer {
+  color: var(--ink-800);
+  box-shadow: var(--shadow-md);
+}
+
+.drawer-contact-box {
+  color: var(--ink-800);
+}
+
+.drawer-contact-box > div[style*="color:#a3a3a3"] {
+  color: var(--ink-600) !important;
+}
+
+.mobile-drawer .btn-outline[style] {
+  color: var(--ink-950) !important;
+  border-color: var(--border-subtle) !important;
+}
+
+/* Inline legacy footer colours would otherwise stay pale against the new paper. */
+.site-footer [style*="color:#a3a3a3"] {
+  color: var(--scope-dim) !important;
+}
+
+.site-footer [style*="color:#ffffff"] {
+  color: var(--ink-800) !important;
+}
+
+/* Surface text inherited white explicitly in the previous dark treatment. */
+.cleaning-spotlight-card,
+.doctor-credential-banner {
+  color: var(--ink-800);
+}
+
+.btn-dark {
+  background: var(--ink-950);
+  color: #ffffff;
+  border-color: var(--ink-950);
+}
+
+.btn-dark:hover {
+  background: var(--ink-900);
+  color: #ffffff;
+}
+
+/* Frosted, legible labels on the hero and gallery photographs. */
+.plate-anno,
+.gallery-caption {
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  color: var(--ink-800);
+}
+
+.plate-anno b {
+  color: var(--brass-700);
+}
+
+.gallery-caption strong {
+  color: var(--ink-950);
+}
+
+.gallery-caption span {
+  color: var(--ink-600);
+}
+
+.plate-hint {
+  color: var(--ink-800);
+  background: rgba(255, 255, 255, 0.88);
+  border-color: var(--rule-paper);
+}
+
+/* Keep the fixed action rail light as well; section 19 supplies its small blur. */
+.sticky-mobile-bar {
+  background: rgba(255, 255, 255, 0.92);
+  border-top-color: var(--rule-paper);
+  box-shadow: 0 -3px 12px rgba(133, 145, 166, 0.16), 0 -1px 8px rgba(255, 255, 255, 0.7);
+}
+
+/* A light drawer/contact surface also needs a readable version of its inline
+   legacy location labels; the call link above is corrected without HTML edits. */
+.mobile-drawer [style*="color:#d1ad53"] {
+  color: var(--brass-700) !important;
+}
+
+/* Neumorphism stays restrained and localized to the card-like paper surfaces. */
+.cleaning-spotlight-card,
+.cleaning-selector-box,
+.doctor-photo-frame,
+.booking-form-card,
+.review-card {
+  box-shadow: var(--shadow-sm);
+}
+
+/* The few dark-ground overrides above are historical now; on every live light
+   surface the focus ring remains the darker brass token for visible contrast. */
+.ground-scope,
+.section-dark,
+.cleaning-spotlight-card,
+.mobile-drawer,
+.site-footer,
+.sticky-mobile-bar,
+.hero-section {
+  --focus: #7c5f14;
+}
