@@ -2082,6 +2082,20 @@ button, input, select, textarea {
     transform: none;
   }
 }
+<<<<<<< HEAD
+
+.footer-credit-link {
+  color: #ffffff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+  padding-bottom: 1px;
+  transition: color .18s ease, border-color .18s ease;
+}
+
+.footer-credit-link:hover {
+  color: var(--gold-400);
+  border-color: var(--gold-400);
+}
+
 
 
 /* ==========================================================================
@@ -2135,3 +2149,5 @@ button, input, select, textarea {
 #bookingSuccessBanner.is-failed #bookingSuccessHeading {
   color: #b42318;
 }
+
+>>>>>>> f3d12854df6e9d7ea736016ba226f0aaeda19be8
