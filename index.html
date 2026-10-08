@@ -946,97 +946,104 @@
             </p>
 
             <form id="quickBookForm" onsubmit="handleBookingSubmit(event)">
-              <div class="form-group">
-                <label class="form-label" for="patientName">Full name</label>
-                <input
-                  type="text"
-                  id="patientName"
-                  class="form-input"
-                  placeholder="Karthik Subramanian"
-                  autocomplete="name"
-                  required
-                />
-              </div>
+  <input type="hidden" name="access_key" value="61dfcb0f-2721-46d3-a727-38de171efa97" />
+  <input type="hidden" name="subject" value="New appointment request — ICONIC Dental & Aesthetics" />
+  <input type="hidden" name="from_name" value="ICONIC Dental website" />
+  <input type="checkbox" name="botcheck" class="hidden" style="display:none" tabindex="-1" autocomplete="off" />
 
-              <div class="form-group">
-                <label class="form-label" for="patientPhone">Mobile number</label>
-                <div class="phone-input-wrap">
-                  <span class="phone-prefix">+91</span>
-                  <input
-                    type="tel"
-                    id="patientPhone"
-                    class="form-input"
-                    inputmode="tel"
-                    maxlength="10"
-                    autocomplete="tel"
-                    pattern="[0-9\s\-]{10,13}"
-                    placeholder="98400 12345"
-                    required
-                  />
-                </div>
-              </div>
+  <div class="form-group">
+    <label class="form-label" for="patientName">Full name</label>
+    <input
+      type="text"
+      id="patientName"
+      name="name"
+      class="form-input"
+      placeholder="Karthik Subramanian"
+      autocomplete="name"
+      required
+    />
+  </div>
 
-              <div class="form-group">
-                <label class="form-label">Treatment or concern</label>
-                <input type="hidden" id="selectedTreatmentInput" value="Ultrasonic Dental Cleaning & Oral Checkup" />
-                <div class="treatment-chips-grid" id="treatmentChips">
-                  <button type="button" class="treatment-chip selected" onclick="selectTreatmentChip(this, 'Ultrasonic Dental Cleaning & Oral Checkup')">
-                    Cleaning and scaling
-                  </button>
-                  <button type="button" class="treatment-chip" onclick="selectTreatmentChip(this, 'Microscopic Root Canal Treatment')">
-                    Root canal
-                  </button>
-                  <button type="button" class="treatment-chip" onclick="selectTreatmentChip(this, 'Braces & Clear Aligners')">
-                    Braces and aligners
-                  </button>
-                  <button type="button" class="treatment-chip" onclick="selectTreatmentChip(this, 'Smile Makeover & Teeth Whitening')">
-                    Smile makeover
-                  </button>
-                  <button type="button" class="treatment-chip" onclick="selectTreatmentChip(this, 'Dental Implants / Crown & Bridge')">
-                    Implants and crowns
-                  </button>
-                  <button type="button" class="treatment-chip" onclick="selectTreatmentChip(this, 'Kids Dentistry')">
-                    Kids dentistry
-                  </button>
-                  <button type="button" class="treatment-chip" onclick="selectTreatmentChip(this, 'Tooth Pain / Wisdom Tooth Relief')">
-                    Toothache
-                  </button>
-                </div>
-              </div>
+  <div class="form-group">
+    <label class="form-label" for="patientPhone">Mobile number</label>
+    <div class="phone-input-wrap">
+      <span class="phone-prefix">+91</span>
+      <input
+        type="tel"
+        id="patientPhone"
+        name="phone"
+        class="form-input"
+        inputmode="tel"
+        maxlength="10"
+        autocomplete="tel"
+        pattern="[0-9\s\-]{10,13}"
+        placeholder="98400 12345"
+        required
+      />
+    </div>
+  </div>
 
-              <div class="form-group" style="display:grid; grid-template-columns:1fr; gap:14px;">
-                <div>
-                  <label class="form-label" for="preferredDate">Preferred date</label>
-                  <input type="date" id="preferredDate" class="form-input" />
-                </div>
-                <div>
-                  <label class="form-label">Preferred time</label>
-                  <input type="hidden" id="selectedSlotInput" value="Evening (5:00 PM – 8:30 PM)" />
-                  <div class="slot-pills-row" id="slotPills">
-                    <button type="button" class="slot-pill" onclick="selectSlotPill(this, 'Morning (9:30 AM – 1:00 PM)')">
-                      Morning<br /><span style="font-weight:400; font-size:0.74rem; color:var(--ink-600);">9:30 to 1:00</span>
-                    </button>
-                    <button type="button" class="slot-pill" onclick="selectSlotPill(this, 'Afternoon (1:00 PM – 5:00 PM)')">
-                      Afternoon<br /><span style="font-weight:400; font-size:0.74rem; color:var(--ink-600);">1:00 to 5:00</span>
-                    </button>
-                    <button type="button" class="slot-pill selected" onclick="selectSlotPill(this, 'Evening (5:00 PM – 8:30 PM)')">
-                      Evening<br /><span style="font-weight:400; font-size:0.74rem; color:var(--ink-600);">5:00 to 8:30</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
+  <div class="form-group">
+    <label class="form-label">Treatment or concern</label>
+    <input type="hidden" id="selectedTreatmentInput" name="treatment" value="Ultrasonic Dental Cleaning & Oral Checkup" />
+    <div class="treatment-chips-grid" id="treatmentChips">
+      <button type="button" class="treatment-chip selected" onclick="selectTreatmentChip(this, 'Ultrasonic Dental Cleaning & Oral Checkup')">
+        Cleaning and scaling
+      </button>
+      <button type="button" class="treatment-chip" onclick="selectTreatmentChip(this, 'Microscopic Root Canal Treatment')">
+        Root canal
+      </button>
+      <button type="button" class="treatment-chip" onclick="selectTreatmentChip(this, 'Braces & Clear Aligners')">
+        Braces and aligners
+      </button>
+      <button type="button" class="treatment-chip" onclick="selectTreatmentChip(this, 'Smile Makeover & Teeth Whitening')">
+        Smile makeover
+      </button>
+      <button type="button" class="treatment-chip" onclick="selectTreatmentChip(this, 'Dental Implants / Crown & Bridge')">
+        Implants and crowns
+      </button>
+      <button type="button" class="treatment-chip" onclick="selectTreatmentChip(this, 'Kids Dentistry')">
+        Kids dentistry
+      </button>
+      <button type="button" class="treatment-chip" onclick="selectTreatmentChip(this, 'Tooth Pain / Wisdom Tooth Relief')">
+        Toothache
+      </button>
+    </div>
+  </div>
 
-              <p id="formError" class="form-error" role="alert" hidden></p>
+  <div class="form-group" style="display:grid; grid-template-columns:1fr; gap:14px;">
+    <div>
+      <label class="form-label" for="preferredDate">Preferred date</label>
+      <input type="date" id="preferredDate" name="preferred_date" class="form-input" />
+    </div>
+    <div>
+      <label class="form-label">Preferred time</label>
+      <input type="hidden" id="selectedSlotInput" name="preferred_time" value="Evening (5:00 PM – 8:30 PM)" />
+      <div class="slot-pills-row" id="slotPills">
+        <button type="button" class="slot-pill" onclick="selectSlotPill(this, 'Morning (9:30 AM – 1:00 PM)')">
+          Morning<br /><span style="font-weight:400; font-size:0.74rem; color:var(--ink-600);">9:30 to 1:00</span>
+        </button>
+        <button type="button" class="slot-pill" onclick="selectSlotPill(this, 'Afternoon (1:00 PM – 5:00 PM)')">
+          Afternoon<br /><span style="font-weight:400; font-size:0.74rem; color:var(--ink-600);">1:00 to 5:00</span>
+        </button>
+        <button type="button" class="slot-pill selected" onclick="selectSlotPill(this, 'Evening (5:00 PM – 8:30 PM)')">
+          Evening<br /><span style="font-weight:400; font-size:0.74rem; color:var(--ink-600);">5:00 to 8:30</span>
+        </button>
+      </div>
+    </div>
+  </div>
 
-              <div style="display:flex; flex-direction:column; gap:10px; margin-top:24px;">
-                <button type="submit" class="btn btn-gold" style="width:100%;">
-                  Request callback
-                </button>
-                <button type="button" class="btn btn-whatsapp" style="width:100%;" onclick="sendFormToWhatsApp()">
-                  Send on WhatsApp
-                </button>
-              </div>
-            </form>
+  <p id="formError" class="form-error" role="alert" hidden></p>
+
+  <div style="display:flex; flex-direction:column; gap:10px; margin-top:24px;">
+    <button type="submit" class="btn btn-gold" style="width:100%;">
+      Request callback
+    </button>
+    <button type="button" class="btn btn-whatsapp" style="width:100%;" onclick="sendFormToWhatsApp()">
+      Send on WhatsApp
+    </button>
+  </div>
+</form>
 
             <div id="bookingSuccessBanner" style="display:none; margin-top:20px; padding:18px; border-radius:6px; background:#f0f7f2; border:1px solid #1fa855; color:var(--ink-950);">
               <strong style="font-size:1rem; display:block; margin-bottom:6px;">Request received</strong>
