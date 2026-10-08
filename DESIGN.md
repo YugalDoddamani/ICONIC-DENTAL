@@ -1,14 +1,15 @@
-# CALIBRATED BLACK
+# DAYLIGHT PASS
 ### Design system for ICONIC Dental & Aesthetics — Shanthi Colony, Anna Nagar, Chennai
 
-One line: **the page is built like the instrument.** The clinic's only real
+One line: **the page is built like the instrument.** The clinic's real
 differentiator is magnified sight — a surgical microscope and a diagnosis the
-patient sees on screen before treatment starts. So the interface is near-black
-fields, brass hairlines, measured type, and one signature move that lets you
-magnify the photograph yourself.
+patient sees on screen before treatment starts. The post-merge client direction
+keeps that evidence-led pattern, but moves it onto cool paper (`#e8ebf2`), with
+a white navbar, measured type, soft elevation and the same signature loupe.
 
-Status: direction committed, first build landed in `system.css`.
-Not yet folded into `styles.css` — see Appendix C.
+Status: the daylight skin is the latest client direction, layered in `system.css`
+section 21. It preserves the existing structure and `TASK` behavior; the earlier
+black-ground rationale below records the first visual direction.
 
 ---
 
@@ -17,7 +18,7 @@ Not yet folded into `styles.css` — see Appendix C.
 > Reading this as **a single-page local clinic landing site** for **Chennai
 > patients choosing a dentist (anxious first-timers, families, cosmetic
 > enquiries)**, with a **precision-instrument** language, leaning toward
-> **clinical editorial — instrument optics on black, evidence over adjectives.**
+> **clinical editorial — evidence over adjectives, now on cool paper rather than black.**
 
 Why not the alternatives:
 
@@ -51,51 +52,48 @@ unambiguous.
 Banned outright for this project. Each one is either a generic LLM default or a
 specific mistake this page already made.
 
-1. **No ivory / parchment / "quiet luxury" premium.** The current ground
+1. **No ivory / parchment / "quiet luxury" premium.** The retired ground
    `#f6f5f2` is `oklch(97% 0.004 91)` — hue 91. The brand brass is hue 86–92.
    The old palette spread the brand hue across the entire page background, which
    is why nothing could ever read as brass: everything was already brass. Warmth
    now exists **only in the accent**, never in the ground.
-2. **No second warm neutral.** Paper is cool: `#f3f4f1` = `oklch(96.6% 0.004 122)`.
+2. **No second warm neutral.** Paper is cool: `#e8ebf2`; white is reserved for distinct cards and the navbar.
 3. **No purple/indigo gradient, no `#2563eb` SaaS blue, no mint-teal medical.**
    The teal lives in the clinic's *unused* stock assets (see Appendix A) — it is
    the visual language of a stock photo agency, not of this practice.
 4. **No three equal feature cards with line icons in circles.** The
    "what to expect" list is a ruled protocol ledger instead.
-5. **No glass as a default surface. Glass only where it refracts something.**
-   *Revised — this was a flat ban on `backdrop-filter`, at the client's request.*
-   The original reasoning stands and is why the rule is now narrow rather than
-   gone: on a flat ground, frosted glass renders as a slightly-lighter grey
-   rectangle, so you pay the GPU cost and get no effect. Glass needs
-   *substructure*. So there are exactly **four panes** on this page, and each one
-   is over a photograph or over moving content:
+5. **Glass is a localized accent, not a default surface.** The post-merge
+   daylight pass keeps the four useful panes but gives them a white frost. The
+   header stays solid at rest and only frosts on the existing `.scrolled` state;
+   the other panes sit over moving content or clinic photographs:
 
-   | Pane | Sits over | Tint |
+   | Pane | Sits over | Treatment |
    |---|---|---|
-   | `.site-header` | the hero plate and the paper sections scrolling under it | 62% when scrolled, 86% at rest |
-   | `.sticky-mobile-bar` | scrolling content, but carries the primary CTAs | 86% (near-opaque on purpose) |
-   | `.plate-anno` | the hero photograph | 50% |
-   | `.gallery-caption` | six clinic photographs, static | 50% |
+   | `.site-header` | the hero plate and the sections scrolling under it | solid white at rest; 86% white with 8px blur when scrolled |
+   | `.sticky-mobile-bar` | scrolling content, while carrying the primary CTAs | 92% white with 8px blur |
+   | `.plate-anno` | the hero photograph | 86% white with 12px blur |
+   | `.gallery-caption` | six clinic photographs, static | 86% white with 12px blur |
 
-   Everything else — the booking card, the cleaning selector, treatment rows,
-   review cards, the readout cells, and **the mobile drawer** — stays solid. The
-   drawer is the tell: it is the most tempting place to use glass and the worst
-   one, because a full-height pane sliding on `transform` while compositing a
-   backdrop filter is exactly the combination that janks on mid-range Android.
-   A rule is only a rule if it costs you something you wanted.
-6. **No rounded-everything.** Radii are `2px`, and `0` for data rows. The only
-   round object on the page is the loupe lens, because a lens is round by nature.
-   Review avatars became 2px initials chips; the status dot became a square pip.
-   The glass panes do not get an invented corner either — a `12px` radius exists
-   nowhere else in the system, and one element is not a vocabulary.
-7. **No shadows on the black grounds.** Black is edged with hairlines, never
-   lifted. Shadows do exist elsewhere — `--shadow-sm` / `--shadow-md` are real
-   values because `styles.css` uses them on button hover and the shrinking
-   header. Nulling a token another layer depends on is invisible breakage, and
-   it is worse than a two-pixel shadow.
+   Everything else — the booking card, cleaning selector, treatment rows, review
+   cards, readout cells and **mobile drawer** — stays solid. The drawer remains
+   deliberately opaque: a full-height panel sliding on `transform` while
+   compositing a backdrop filter is the combination most likely to jank on
+   mid-range Android. A rule is only a rule if it costs you something you wanted.
+6. **Moderate corners, not rounded-everything.** The shared radius steps are
+   `6px`, `10px` and `14px`; data rows and tiled plate grids stay square. The only
+   fully round object is the loupe lens, because a lens is round by nature. The
+   original composition and component pattern stay intact; the corners simply
+   return to the more approachable base-system scale.
+7. **Use elevation sparingly.** Light card surfaces, the scrolled header and
+   hover feedback may use the soft dual-shadow pair in `--shadow-sm` and
+   `--shadow-md`. The cool-grey shadow and white highlight are intentionally
+   low-contrast; they give paper a little lift without turning every region into
+   a floating card. The former black grounds are light now. `.btn-dark` remains
+   the single intentional dark surface, with a white label for contrast.
 8. **No white text on a saturated fill.** Brass and WhatsApp green both take a
-   near-black label. This is also an accessibility fix: the current
-   `.btn-whatsapp` is white on `#1fa855` = **3.09:1 — below AA.**
+   near-black label. The legacy white label on `.btn-whatsapp` / `#1fa855` was
+   only **3.09:1 — below AA**; the token pass uses dark ink at **6.29:1**.
 9. **No unverifiable numbers.** `2,000+ patients`, `4,000+ treatments`, and a
    bare `4.9 rating` with no source are exactly the claims the Dental Council of
    India's ethics code treats as misleading advertising. Cite the source or cut
@@ -157,35 +155,36 @@ mark**, a 7px brass crosshair that opens every eyebrow. It is the page's period.
 
 ### 4.3 Palette roles
 
-Warmth is the accent's job. The grounds are cool, so brass can do its work.
+The client-selected daylight pass keeps the same measured hierarchy and brass
+accent, but moves every former scope ground onto cool paper. Warmth belongs to
+the accent, not the page background.
 
-| Role | Token | Hex | OKLCH | Contrast |
-|---|---|---|---|---|
-| Instrument black (ground) | `--scope-900` | `#0d0d0c` | `oklch(15.9% 0.002 107)` | — |
-| Black, raised (panels) | `--scope-800` | `#1a1a18` | `oklch(21.5% 0.003 107)` | — |
-| Clinical paper (reading ground) | `--paper-100` | `#f3f4f1` | `oklch(96.6% 0.004 122)` | — |
-| Paper, pure (forms/cards) | `--paper-000` | `#ffffff` | `oklch(100% 0 90)` | — |
-| Neutral grey (behind the comparison) | `--neutral-100` | `#e8e8e6` | `oklch(93.0% 0.003 106)` | — |
-| Brass — the fill | `--brass-500` | `#c09a3e` | `oklch(70.4% 0.118 86)` | ink on it **7.35** |
-| Brass — on black (eyebrows, readouts) | `--brass-300` | `#e2c97e` | `oklch(84.0% 0.099 92)` | on black **11.9** |
-| Brass — the hairline `rgba(211,178,92,.3)` | `--brass-400` | `#d3b25c` | `oklch(77.5% 0.112 89)` | on black **9.4** |
-| Brass ink — on paper only | `--brass-700` | `#7c5f14` | `oklch(50.2% 0.095 86)` | on paper **5.5 / white 6.0** |
-| Ink primary | `--ink-950` | `#0d0d0c` | `oklch(15.9% 0.002 107)` | on paper **19.4** |
-| Ink secondary | `--ink-600` | `#55554e` | `oklch(44.7% 0.011 107)` | on paper **6.9** |
-| Dim, on black | `--scope-dim` | `#a9a9a1` | `oklch(73.2% 0.011 107)` | on black **8.1** |
-| Open / available | `--ok-400` | `#5cc78e` | `oklch(75.1% 0.130 158)` | on black **8.9** |
-| WhatsApp fill | `--whatsapp-green` | `#1fa855` | `oklch(64.4% 0.165 151)` | ink on it **6.3** |
+| Role | Token | Hex | Contrast |
+|---|---|---|---|
+| Cool reading ground | `--paper-100`, `--scope-900` | `#e8ebf2` | — |
+| Raised cool surface | `--paper-200`, `--scope-800` | `#dfe5ef` | — |
+| Pure white surface | `--paper-000` | `#ffffff` | — |
+| Neutral comparison ground | `--neutral-100` | `#e1e6ef` | — |
+| Primary ink | `--ink-950` | `#0d0d0c` | on cool paper **16.3** |
+| Body ink | `--ink-600` | `#4e5a6c` | on cool paper **5.86** |
+| Muted labels | `--scope-faint` | `#5a6678` | on cool paper **4.88** |
+| Brass — the fill | `--brass-500` | `#c09a3e` | ink on it **7.35** |
+| Brass ink — eyebrows and active labels | `--brass-300`, `--brass-700` | `#7c5f14` | on cool paper **5.02** |
+| Open / available indicator | `--ok-400` | `#287d4d` | on cool paper **4.26** (non-text pip) |
+| WhatsApp fill | `--whatsapp-green` | `#1fa855` | ink on it **6.29** |
 
 Roles, not colours:
-- **Brass is never body text and never decoration.** It marks: the live value,
-  the active state, the actionable row, the annotation. If it isn't pointing at
-  something, it isn't brass.
-- **Black is not "dark mode".** It is the *look-at-this* surface: the hero, the
-  doctor, the trust ledger, the frame of the page.
-- **Paper is where you read and fill things in.**
-- Exactly two radii: `0` for data rows and tiled plate grids, `2px` for
-  everything interactive. `9999px` is reserved for the lens.
-- Exactly zero elevations. Black is edged; paper is edged. Nothing floats.
+- **Brass marks the live value, active state, actionable row or annotation.** It
+  is an accent, not a substitute for body copy.
+- **Dark ink is for text.** `.btn-dark` is the single intentionally dark
+  surface; the old black section grounds are now cool paper.
+- **Paper is where you read and fill things in.** Cool paper is the page ground;
+  pure white separates cards and the navbar.
+- The shared radius steps are `6px`, `10px` and `14px`. Data rows and tiled
+  plate grids stay square; `9999px` is reserved for the loupe.
+- Elevation is limited to a soft dual-shadow pair on selected paper cards,
+  scrolled chrome and hover feedback. The page should feel gently lifted, not
+  like a field of floating tiles.
 
 **Boundary rule:** a boundary between sections is a tone change **or** a
 hairline, never both.
@@ -219,9 +218,9 @@ Desktop, 1240px container, 12 columns. Copy is the readout; the photograph is
 the specimen. Deliberately asymmetric — 6.6 / 5.4, not 6 / 6.
 
 ```
-┌─ black strip: address ──────────────── open ● Mon–Sat 9:30 · phones ─┐
+┌─ cool-paper strip: address ─────────── open ● Mon–Sat 9:30 · phones ─┐
 │ ▓WHITE LOGO CHIP▓   CLEANING  TREATMENTS  DR. RAGURAAM  RESULTS  CLINIC  VISIT   [phone] [BOOK]
-├──────────────────────────────────────────────────────────────────────┤   ↑ black, hairline bottom
+├──────────────────────────────────────────────────────────────────────┤   ↑ white at rest; white frost when scrolled
 │ ✛ SHANTHI COLONY · ANNA NAGAR · CHENNAI 600 040      ┌─────────────┐  │
 │                                                      │  ⌐        ¬ │  │  ← brass hairline frame
 │ Most dentistry is done by feel.                      │             │  │     + corner ticks
@@ -237,19 +236,23 @@ the specimen. Deliberately asymmetric — 6.6 / 5.4, not 6 / 6.
 └──────────────────────────────────────────────────────────────────────┘
 ```
 
-Grounds, top to bottom — three black beats frame the page:
+Grounds, top to bottom — the same section cadence now alternates cool paper
+and white, without a black framing beat:
 
 ```
-SCOPE  · mobile strip + header + hero + readout      ← the instrument
-paper  · 01 cleaning spotlight (black panel on paper)
-white  · 02 treatments index
-SCOPE  · 03 Dr. Raguraam + 04 protocol ledger        ← the middle beat
-grey   · 05 before / after   (neutral surround: colour judgement)
-white  · 06 inside the clinic (tiled plates + loupe)
-paper  · 07 reviews + FAQ
-paper  · 08 booking + visit  (hairline between, not a tone change)
-SCOPE  · footer + sticky action bar                  ← the instrument closes
+cool paper · mobile strip + white header + hero + readout (`.ground-scope`)
+cool paper · 01 cleaning spotlight (raised card on paper)
+white      · 02 treatments index
+cool paper · 03 Dr. Raguraam + 04 protocol ledger
+neutral    · 05 before / after (colour-judgement surround)
+white      · 06 inside the clinic (tiled plates + loupe)
+cool paper · 07 reviews + FAQ
+cool paper · 08 booking + visit (hairline between, not a tone change)
+cool paper · footer + white-frost sticky action bar
 ```
+
+The single dark surface is the `.btn-dark` action; dark ink remains throughout
+as readable type.
 
 ### 4.6 Motion intent — MOTION_INTENSITY 6
 
@@ -267,7 +270,8 @@ systems fighting.
 - **Hero load stagger** — the `rise` keyframe across `.eyebrow`, `.statement`,
   `.lede`, `.hero-cta-group`, `.hero-credit`.
 - **Header state** — `updateHeaderState()` toggles `.scrolled` past 8px, which
-  shrinks `.header-inner` from 84px to 60px and adds a hairline shadow.
+  shrinks `.header-inner` from 84px to 60px and lets `system.css` switch the
+  solid-white header to a white frost with a soft dual-shadow.
 - **Stat counters** — `countUp()`, jumping straight to the final value under
   reduced motion. See §3.14 for the compliance caveat.
 - **Scrollspy** — `updateScrollSpy()` marks the active nav link from
@@ -285,9 +289,9 @@ systems fighting.
   `aria-hidden`, so a screen reader goes straight to the phone number. There is
   deliberately **no scroll lock** — a 320ms cover does not need one, and every
   lock is a chance to strand someone on an unscrollable page.
-- **The header's glass tint**, applied through the `.scrolled` class `app.js`
-  already sets. The shrink and the tint compose; they are the same signal, so
-  there is no second scroll listener.
+- **The header's white frost**, applied only through the `.scrolled` class
+  `app.js` already sets. It is opaque white at rest and frosted while scrolled;
+  the shrink and the tint compose as one signal, with no second scroll listener.
 - **The loupe**, pointer-driven, ~90ms follow with instant start.
 
 **Reduced motion:** both layers honour it. The `TASK` reveal, the stagger and
@@ -417,10 +421,11 @@ Real issues found while specifying this. Ordered by cost to the clinic.
 
 ## Appendix B — What landed, and where it lives
 
-- `system.css` — the taste layer. **This pass contributes two things: the four
-  glass panes (§1–20) and the entrance cover.** Everything else in the file is
-  the original design direction: tokens, grounds, type rules, the hero, the
-  ledgers. It deliberately owns no scroll state.
+- `system.css` — the taste layer. Sections 1–20 preserve the original
+  composition, four glass panes and entrance cover; **section 21 is the
+  post-merge daylight skin**, re-pointing tokens and recolouring those panes
+  without owning scroll state. The file continues to leave all scroll behavior
+  to the `TASK` pass.
 - `index.html` — this pass adds only the cover markup and the `js` flag plus
   `<noscript>` guard. Everything else (hero, eyebrows, grounds, nav, ARIA,
   `data-target`, `--i` staggers, drawer `aria-hidden`) is the design direction
