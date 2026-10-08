@@ -12,20 +12,25 @@ let currentCleaningPackage = "Routine Ultrasonic Dental Cleaning & Polishing";
 let drawerTrigger = null;
 
 /* --------------------------------------------------------------------------
-   Default preferred date: tomorrow
+   Default preferred date: tomorrow.
+
+   min is TODAY, not tomorrow. It used to be set to the default value, which
+   silently made same-day emergency booking impossible through this form —
+   toothache is one of the chips above.
    -------------------------------------------------------------------------- */
 document.addEventListener('DOMContentLoaded', () => {
   const dateInput = document.getElementById('preferredDate');
   if (!dateInput) return;
 
+  const today = new Date();
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
-  const yyyy = tomorrow.getFullYear();
-  const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
-  const dd = String(tomorrow.getDate()).padStart(2, '0');
 
-  dateInput.value = `${yyyy}-${mm}-${dd}`;
-  dateInput.min = `${yyyy}-${mm}-${dd}`;
+  const iso = (d) =>
+    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+  dateInput.min = iso(today);
+  if (!dateInput.value) dateInput.value = iso(tomorrow);
 });
 
 /* --------------------------------------------------------------------------
@@ -243,31 +248,42 @@ function scrollToBooking(preselectedTreatment) {
 
       if (isMatch) {
         chip.classList.add('selected');
+        chip.setAttribute('aria-pressed', 'true');
         matched = true;
+      } else {
+        chip.setAttribute('aria-pressed', 'false');
       }
     });
 
-    if (!matched && chips.length > 0) chips[0].classList.add('selected');
+    if (!matched && chips.length > 0) {
+      chips[0].classList.add('selected');
+      chips[0].setAttribute('aria-pressed', 'true');
+    }
   }
 
   if (section) section.scrollIntoView({ behavior: scrollBehavior(), block: 'start' });
 }
 
-function selectTreatmentChip(chipEl, treatmentName) {
-  document.querySelectorAll('#treatmentChips .treatment-chip').forEach((c) => {
-    c.classList.remove('selected');
+/* Keep .selected and aria-pressed in step. The chips and pills are toggle
+   buttons whose state is otherwise only a background colour, so a screen
+   reader had no way to hear which one was chosen. */
+function setSelectedChoice(selector, chosen) {
+  document.querySelectorAll(selector).forEach((el) => {
+    const isChosen = el === chosen;
+    el.classList.toggle('selected', isChosen);
+    el.setAttribute('aria-pressed', isChosen ? 'true' : 'false');
   });
-  if (chipEl) chipEl.classList.add('selected');
+}
+
+function selectTreatmentChip(chipEl, treatmentName) {
+  setSelectedChoice('#treatmentChips .treatment-chip', chipEl);
 
   const input = document.getElementById('selectedTreatmentInput');
   if (input) input.value = treatmentName;
 }
 
 function selectSlotPill(pillEl, slotLabel) {
-  document.querySelectorAll('#slotPills .slot-pill').forEach((p) => {
-    p.classList.remove('selected');
-  });
-  if (pillEl) pillEl.classList.add('selected');
+  setSelectedChoice('#slotPills .slot-pill', pillEl);
 
   const input = document.getElementById('selectedSlotInput');
   if (input) input.value = slotLabel;
@@ -297,45 +313,203 @@ function buildWhatsAppBookingUrl() {
 }
 
 /* --------------------------------------------------------------------------
-   TASK 2 — Validate before showing the success banner.
-   Name must be non-empty. Phone must be 10 digits starting 6-9.
+   Booking submission — TASK 2 (validation) + the fix for the dead form.
+
+   The form carries a Web3Forms access_key but nothing ever consumed it:
+   handleBookingSubmit called preventDefault(), rendered "Thank you, {name}"
+   and returned, so the page claimed a request had been received when no
+   request had been sent anywhere. There was no fetch() in this file at all.
+
+   Now: validate, POST to Web3Forms, and if that fails for any reason fall
+   back to WhatsApp so a request is never silently dropped.
    -------------------------------------------------------------------------- */
-function handleBookingSubmit(event) {
+const WEB3FORMS_ENDPOINT = 'https://api.web3forms.com/submit';
+const WEB3FORMS_TIMEOUT_MS = 8000;
+
+/* Every field in the summary is user input. textContent only, never innerHTML —
+   a name like `<img src=x onerror=...>` used to be parsed as markup. */
+function setBookingSummary(text) {
+  const summary = document.getElementById('bookingSuccessSummary');
+  if (summary) summary.textContent = text;
+}
+
+function setFormStatus(message) {
+  const status = document.getElementById('formStatus');
+  if (!status) return;
+  status.hidden = !message;
+  status.textContent = message || '';
+}
+
+function setFormError(message) {
+  const errorEl = document.getElementById('formError');
+  if (!errorEl) return;
+  errorEl.hidden = !message;
+  errorEl.textContent = message || '';
+}
+
+function setSubmitBusy(busy) {
+  const btn = document.getElementById('bookingSubmitBtn');
+  if (!btn) return;
+  btn.disabled = busy;
+  btn.setAttribute('aria-busy', busy ? 'true' : 'false');
+  btn.textContent = busy ? 'Sending…' : 'Request callback';
+}
+
+function localDateString(d) {
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+function formatPreferredDate(value) {
+  if (!value) return 'next available day';
+  const [y, m, d] = value.split('-').map(Number);
+  if (!y || !m || !d) return value;
+  return new Date(y, m - 1, d).toLocaleDateString('en-IN', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+}
+
+function readBookingForm() {
+  const name = (document.getElementById('patientName')?.value || '').trim();
+  const digits = (document.getElementById('patientPhone')?.value || '').replace(/\D/g, '');
+  return {
+    name,
+    digits,
+    treatment:
+      document.getElementById('selectedTreatmentInput')?.value ||
+      'Ultrasonic Dental Cleaning & Oral Checkup',
+    date: document.getElementById('preferredDate')?.value || '',
+    slot:
+      document.getElementById('selectedSlotInput')?.value ||
+      'Evening (5:00 PM – 8:30 PM)',
+  };
+}
+
+async function handleBookingSubmit(event) {
   event.preventDefault();
 
-  const name = document.getElementById('patientName')?.value.trim() || '';
-  const phone = document.getElementById('patientPhone')?.value.trim() || '';
-  const treatment = document.getElementById('selectedTreatmentInput')?.value || '';
-  const date = document.getElementById('preferredDate')?.value || '';
-  const slot = document.getElementById('selectedSlotInput')?.value || '';
+  const form = document.getElementById('quickBookForm');
+  const values = readBookingForm();
+  const today = localDateString(new Date());
 
-  const errorEl = document.getElementById('formError');
-  const phoneOk = /^[6-9]\d{9}$/.test(phone.replace(/\D/g, ''));
-
-  if (!name || !phoneOk) {
-    if (errorEl) {
-      errorEl.hidden = false;
-      errorEl.textContent = 'Enter your name and a valid 10-digit mobile number.';
-    }
+  if (!values.name) {
+    setFormError('Enter your full name.');
+    document.getElementById('patientName')?.focus();
     return;
   }
 
-  if (errorEl) errorEl.hidden = true;
+  if (!/^[6-9]\d{9}$/.test(values.digits)) {
+    setFormError('Enter a valid 10-digit mobile number starting 6, 7, 8 or 9.');
+    document.getElementById('patientPhone')?.focus();
+    return;
+  }
 
+  if (values.date && values.date < today) {
+    setFormError('That date has already passed. Choose today or later, or leave it blank.');
+    document.getElementById('preferredDate')?.focus();
+    return;
+  }
+
+  setFormError('');
+  setSubmitBusy(true);
+  setFormStatus('Sending your request…');
+
+  let sent = false;
+  let failure = 'We could not reach the booking server.';
+
+  try {
+    const payload = {
+      access_key: form?.elements.namedItem('access_key')?.value || '',
+      subject: 'New appointment request — ICONIC Dental & Aesthetics',
+      from_name: 'ICONIC Dental website',
+      name: values.name,
+      phone: `+91 ${values.digits}`,
+      treatment: values.treatment,
+      preferred_date: values.date ? formatPreferredDate(values.date) : 'Next available day',
+      preferred_time: values.slot,
+      source: typeof location !== 'undefined' ? location.href : '',
+    };
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), WEB3FORMS_TIMEOUT_MS);
+
+    try {
+      const res = await fetch(WEB3FORMS_ENDPOINT, {
+        method: 'POST',
+        headers: { Accept: 'application/json' },
+        body: new URLSearchParams(payload),
+        signal: controller.signal,
+      });
+      const body = await res.json().catch(() => null);
+
+      if (res.ok && body && body.success) {
+        sent = true;
+      } else {
+        failure = (body && body.message) || `The booking server replied ${res.status}.`;
+      }
+    } finally {
+      clearTimeout(timer);
+    }
+  } catch (err) {
+    failure =
+      err && err.name === 'AbortError'
+        ? 'The booking server did not respond in time.'
+        : 'No response from the booking server — you may be offline.';
+  }
+
+  setSubmitBusy(false);
+  setFormStatus('');
+
+  if (sent) {
+    renderBookingOutcome(true, values);
+    return;
+  }
+
+  /* Never a dead end: WhatsApp is the clinic's primary channel anyway, and the
+     fallback link is prefilled with exactly what would have been emailed. */
+  console.warn('[booking] Web3Forms submission failed:', failure);
+  renderBookingOutcome(false, values, failure);
+}
+
+function renderBookingOutcome(success, values, failureMessage) {
   const banner = document.getElementById('bookingSuccessBanner');
-  const summary = document.getElementById('bookingSuccessSummary');
+  const heading = document.getElementById('bookingSuccessHeading');
   const waLink = document.getElementById('bookingSuccessWaLink');
+  if (!banner) return;
 
-  if (summary) {
-    summary.innerHTML =
-      `Thank you, <strong>${name}</strong>. Our Anna Nagar reception will call <strong>+91 ${phone}</strong> to confirm your <strong>${treatment}</strong> slot for <strong>${date}</strong> (${slot}).`;
-  }
-  if (waLink) waLink.href = buildWhatsAppBookingUrl();
+  const when = `${formatPreferredDate(values.date)} · ${values.slot}`;
 
-  if (banner) {
-    banner.style.display = 'block';
-    banner.scrollIntoView({ behavior: scrollBehavior(), block: 'nearest' });
+  banner.classList.toggle('is-failed', !success);
+
+  if (heading) {
+    heading.textContent = success ? 'Request received' : 'Request not sent';
   }
+
+  if (success) {
+    setBookingSummary(
+      `Thank you, ${values.name}. Our Anna Nagar reception will call +91 ${values.digits} to confirm your ${values.treatment} slot for ${when}.`
+    );
+    if (waLink) {
+      waLink.textContent = 'Also open in WhatsApp';
+      waLink.hidden = false;
+      waLink.href = buildWhatsAppBookingUrl();
+    }
+  } else {
+    setBookingSummary(
+      `${failureMessage} Your details were not sent. Send them on WhatsApp instead, or call +91 95977 67768 — we will confirm your ${values.treatment} slot for ${when}.`
+    );
+    if (waLink) {
+      waLink.textContent = 'Send this request on WhatsApp';
+      waLink.hidden = false;
+      waLink.href = buildWhatsAppBookingUrl();
+    }
+  }
+
+  banner.style.display = 'block';
+  banner.scrollIntoView({ behavior: scrollBehavior(), block: 'nearest' });
 }
 
 function sendFormToWhatsApp() {

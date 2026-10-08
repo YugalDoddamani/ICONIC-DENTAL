@@ -239,14 +239,19 @@ grep -c 'loupe-lens' index.html                      # expect 7
 grep -c 'entranceCover' index.html                   # expect 1
 grep -c 'is-in\|html.js .reveal' system.css          # expect 0 (no cascade killer)
 grep -c 'function headerState\|function scrollReveals' app.js   # expect 0
-grep -c '@supports ((backdrop-filter' system.css     # expect 4
+grep -c '@supports ((backdrop-filter' system.css   # expect 5
 node --check app.js && echo "js ok"
 ```
 
-Expected in `system.css`: exactly 4 `@supports ((backdrop-filter` blocks, named
-`.site-header`, `.sticky-mobile-bar`, `.plate-anno`, `.gallery-caption`. Both
-stylesheets should also pass a real parser — `npx csstree-validator system.css
-styles.css` reports nothing.
+Expected in `system.css`: exactly **5** `@supports ((backdrop-filter` blocks —
+`.site-header`, `.sticky-mobile-bar`, `.plate-anno`, `.gallery-caption`, plus a
+fifth for `.site-header.scrolled` at line ~1839 (added by the merged daylight
+pass). The old note here said 4 and was stale; §5 still describes four *panes*,
+which is correct — the scrolled header is the same pane re-declared.
+
+`csstree-validator` takes **one file per invocation** — passing both paths makes
+it read the second as a subcommand and silently exit 0. Run:
+`npx csstree-validator system.css && npx csstree-validator styles.css`.
 
 **Preview:** `python3 /home/user/serve-iconic.py` → port 8000, serves the repo
 root, refuses dotfile paths so `.git` is never reachable. It lives *outside* the
@@ -286,6 +291,56 @@ anything risky.
 - **Voice rules** (`DESIGN.md` §4.7): short declaratives, name the mechanism not
   the feeling, numbers instead of adjectives, reviews quoted verbatim. Never
   "smile you deserve", "world-class", or any superlative.
+
+---
+
+## 11. The booking form was a silent no-op — and how it was found
+
+The site's primary conversion form **never sent anything**. `index.html` carried a
+Web3Forms `access_key`, but `app.js` had **zero** `fetch` calls: the old
+`handleBookingSubmit` called `preventDefault()`, validated, rendered *"Thank you,
+{name}. Our reception will call you"* and returned. The patient was told their
+request was received; the clinic received nothing. Same failure class as §4.3 —
+markup present, CSS present, no error, invisible in a diff.
+
+Fixed: validate → `POST https://api.web3forms.com/submit` (8s `AbortController`
+timeout) → on any failure, fall back to a prefilled `wa.me` link. A request is
+never a dead end. The banner now doubles as the failure state via
+`.is-failed` — note its success colours are **inline styles**, so that rule needs
+`!important` to win.
+
+Three smaller defects fixed in the same pass, all of them the same shape (two
+sources of truth disagreeing):
+
+1. **`innerHTML` injection.** The summary interpolated the name field into
+   `innerHTML`, so `<img src=x onerror=...>` executed. Now `textContent` only.
+2. **Phone field contradicted itself.** `maxlength="10"` with
+   `pattern="[0-9\s\-]{10,13}"` and placeholder `98400 12345` — typing the
+   placeholder verbatim *failed* validation, because the space ate a digit.
+   Now `pattern="[0-9]{10}"`, placeholder `9840012345`. The JS already stripped
+   non-digits, so the permissive pattern bought nothing.
+3. **`min` on the date field was set to the default value**, i.e. tomorrow — so
+   same-day emergency booking was impossible through the form. `min` is now
+   today; the default *value* is still tomorrow.
+
+Also: the treatment chips and slot pills were `<button>`s whose only state was a
+background colour. They now carry `aria-pressed`, kept in step by
+`setSelectedChoice()`. **Any new chip/pill must go through that helper**, or the
+pressed state drifts from the visual one.
+
+**Grep for `fetch(` before believing any form on this site works.** The
+`botcheck` honeypot still carries an invalid `autocomplete` attribute
+(pre-existing, harmless — it is never submitted). `index.html` has 39
+`html-validate` errors on `main`; none were added by this work, and the baseline
+count is the thing to compare against, not zero.
+
+**The functional test is at `/home/user/formcheck/test-form.mjs`** — outside the
+repo on purpose, like `serve-iconic.py`, so it never lands in a PR. It loads the
+real `index.html` + `app.js` in jsdom, stubs `fetch`, and drives the real
+`handleBookingSubmit`: 51 assertions across submission, failure fallback,
+validation, injection, `aria-pressed` and date bounds. Run
+`cd /home/user/formcheck && npm i jsdom && node test-form.mjs`. It re-implements
+none of the form logic, so it fails when the shipped code breaks.
 
 ---
 
