@@ -862,7 +862,7 @@ button, input, select, textarea {
 
 .cleaning-check-item strong {
   display: block;
-  color: #ffffff;
+  color: #252323;
   font-size: 0.9rem;
   font-weight: 600;
   margin-bottom: 2px;
@@ -2085,7 +2085,7 @@ button, input, select, textarea {
 
 
 .footer-credit-link {
-  color: #ffffff;
+  color: #ff7b43;
   border-bottom: 1px solid rgba(255, 255, 255, 0.25);
   padding-bottom: 1px;
   transition: color .18s ease, border-color .18s ease;
